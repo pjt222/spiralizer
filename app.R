@@ -81,6 +81,15 @@ ui <- semanticPage(
         plotOutput("plot", height = "900px")
       )
     )
+  ),
+  br(),
+  div(
+    class = "row",
+    style = "color:white",
+    a(
+      href = "https://stla.github.io/tessellation/reference/plotVoronoiDiagram.html", 
+      "Kudos to Stéphane Laurent | tessellation"
+      )
   )
 )
 
