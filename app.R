@@ -3,29 +3,46 @@ library(shiny.semantic)
 library(tessellation)
 library(viridisLite)
 
+get_plot_limits <- function(v) {
+  res <- lapply(v, function(a) {
+    res <- lapply(a[["cell"]], function(b) {
+      rbind(
+        b[["A"]],
+        b[["B"]]
+      )
+    })
+  })
+
+  res <- abs(unlist(res))
+
+  c(ceiling(max(res)) * -1, ceiling(max(res)))
+}
+
+
 draw_voronoi_fermat_spiral <- function(from = 0, to = 111L, length = 333L) {
   theta <- seq(from, to, length.out = length)
   x <- sqrt(theta) * cos(theta)
   y <- sqrt(theta) * sin(theta)
   pts <- cbind(x, y)
   opar <- par(
-    mar = c(0, 0, 0, 0)# , bg = "black"
+    mar = c(0, 0, 0, 0), bg = "#696969"
   )
-  
-  plot(NULL,
-       asp = 1, xlim = c(-20, 20), ylim = c(-20, 20),
-       xlab = NA, ylab = NA, axes = FALSE
-  )
-  
+
   del <- delaunay(pts)
   v <- voronoi(del)
   l <- length(Filter(isBoundedCell, v))
-  
+
+  plot(NULL,
+    asp = 1, xlim = get_plot_limits(v), ylim = get_plot_limits(v),
+    xlab = NA, ylab = NA, axes = FALSE
+  )
+
   suppressMessages(plotVoronoiDiagram(v, colors = turbo(l)))
 }
 
 ui <- semanticPage(
   tags$br(),
+  tags$head(tags$style("body {background-color: #696969; }")),
   div(
     class = "ui grid",
     div(
@@ -68,11 +85,15 @@ server <- function(input, output) {
   })
   output$plot <- renderPlot({
     if (is.null(v$from) & is.null(v$to) & is.null(v$flength)) {
-      return()
+      return({
+        plot
+      })
     }
-    draw_voronoi_fermat_spiral(from = v$from,
-                               to = v$to,
-                               length = v$length)
+    draw_voronoi_fermat_spiral(
+      from = v$from,
+      to = v$to,
+      length = v$length
+    )
   })
 }
 
