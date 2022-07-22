@@ -56,7 +56,7 @@ ui <- semanticPage(
       # input
       div(
         class = "column",
-        style = "width:10%!important",
+        style = "width:20%!important",
         segment(
           form(
             field(
@@ -77,8 +77,10 @@ ui <- semanticPage(
       # plot
       div(
         class = "column",
-        style = "width:90%!important",
-        plotOutput("plot", height = "900px")
+        style = "width:70%!important;justify-content:center!important;align-items:center!important;",
+        plotOutput("plot", 
+                   width = "80%",
+                   height = "600px")
       )
     )
   ),
@@ -87,9 +89,9 @@ ui <- semanticPage(
     class = "row",
     style = "color:white",
     a(
-      href = "https://stla.github.io/tessellation/reference/plotVoronoiDiagram.html", 
+      href = "https://stla.github.io/tessellation/reference/plotVoronoiDiagram.html",
       "Kudos to Stéphane Laurent | tessellation"
-      )
+    )
   )
 )
 
@@ -100,9 +102,23 @@ server <- function(input, output) {
     v$to <- input$to
     v$length <- input$length
   })
-  output$plot <- renderPlot({
+
+  output$plot <- renderPlot(execOnResize = FALSE, {
     if (is.null(v$from) & is.null(v$to) & is.null(v$flength)) {
-      return()
+      return({
+        opar <- par(
+          mar = c(0, 0, 0, 0), bg = "grey"
+        )
+        plot(NULL, xlim = c(-2, 2), ylim = c(-2, 2))
+        text(0, 1, substitute(paste("Welcome to ", bold("spiralizer!"))))
+        text(0, 0, substitute(
+          paste(
+            "This app wraps the 2D example of ", italic("plotVoronoiDiagram"), 
+            " of the tessellation package. "
+          )
+        ))
+        text(0, -1, "Choose your values on the left and click Go!")
+      })
     }
     draw_voronoi_fermat_spiral(
       from = v$from,
