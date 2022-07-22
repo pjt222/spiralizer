@@ -1,6 +1,6 @@
 # Welcome to **spiralizer**!
 This app wraps the 2D example of *plotVoronoiDiagram* of the [tessellation](https://stla.github.io/tessellation/reference/plotVoronoiDiagram.html) package.
-Voronoi plots based on a fermat spiral can be created.
+Voronoï plots based on a fermat spiral can be created.
 
 The app is available at [pjt222.shinyapps.io/spiralizer](https://pjt222.shinyapps.io/spiralizer/)
 
