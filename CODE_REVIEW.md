@@ -230,7 +230,7 @@ DEFAULT_LENGTH <- 300
 ## Recommendations Summary
 
 ### Must Fix:
-1. ✅ Fix typo: `v$flength` → `v$length` (app.R:107)
+1. 🔴 Fix typo: `v$flength` → `v$length` (app.R:107)
 
 ### Should Fix:
 2. Add input validation with user-friendly error messages
