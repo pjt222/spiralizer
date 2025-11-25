@@ -26,7 +26,7 @@ if (is.null(v$from) & is.null(v$to) & is.null(v$length)) {
 
 **Issue**: Typo - `v$flength` should be `v$length`. This prevents the welcome screen from displaying correctly since `v$flength` is always NULL.
 
-**Impact**: The initialization check will always fail incorrectly, potentially showing the welcome screen at inappropriate times or never showing it.
+**Impact**: The welcome screen displays correctly on initial load, but after clicking 'Go!' once, the condition becomes true again (since v$flength is always NULL), causing the welcome screen to reappear on subsequent renders instead of showing the generated plot.
 
 **Recommendation**:
 ```r
