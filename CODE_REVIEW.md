@@ -21,7 +21,7 @@ Spiralizer is a well-crafted R Shiny application that creates artistic Voronoi d
 **Severity**: HIGH
 
 ```r
-if (is.null(v$from) & is.null(v$to) & is.null(v$flength)) {
+if (is.null(v$from) & is.null(v$to) & is.null(v$length)) {
 ```
 
 **Issue**: Typo - `v$flength` should be `v$length`. This prevents the welcome screen from displaying correctly since `v$flength` is always NULL.
