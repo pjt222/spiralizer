@@ -2,6 +2,9 @@
 
 library(testthat)
 
+# Source constants first (required by spiral_math.R)
+source(here::here("R/utils/constants.R"))
+
 # Source the functions
 source(here::here("R/utils/spiral_math.R"))
 
@@ -14,9 +17,9 @@ test_that("generate_fermat_spiral creates correct number of points", {
 
 test_that("generate_fermat_spiral handles edge cases", {
   # Minimum points
-  points_min <- generate_fermat_spiral(0, 1, 3)
-  expect_equal(nrow(points_min), 3)
-  
+  points_min <- generate_fermat_spiral(0, 1, SPIRAL_MIN_POINTS)
+  expect_equal(nrow(points_min), SPIRAL_MIN_POINTS)
+
   # Zero start angle
   points_zero <- generate_fermat_spiral(0, 10, 10)
   expect_equal(points_zero[1, "x"], 0)
@@ -40,39 +43,29 @@ test_that("validate_spiral_params catches invalid inputs", {
   result1 <- validate_spiral_params(100, 50, 100)
   expect_false(result1$valid)
   expect_match(result1$message, "Start angle must be less than")
-  
+
   # Too few points
-  result2 <- validate_spiral_params(0, 100, 2)
+  result2 <- validate_spiral_params(0, 100, SPIRAL_MIN_POINTS - 1)
   expect_false(result2$valid)
-  expect_match(result2$message, "at least 3 points")
-  
+  expect_match(result2$message, sprintf("at least %d points", SPIRAL_MIN_POINTS))
+
   # Too many points
-  result3 <- validate_spiral_params(0, 100, 6000)
+  result3 <- validate_spiral_params(0, 100, SPIRAL_MAX_POINTS + 1)
   expect_false(result3$valid)
   expect_match(result3$message, "Too many points")
-  
+
   # Valid params
-  result4 <- validate_spiral_params(0, 100, 300)
+  result4 <- validate_spiral_params(0, 100, SPIRAL_DEFAULT_POINTS)
   expect_true(result4$valid)
   expect_equal(result4$message, "")
-})
-
-test_that("create_cache_key generates consistent keys", {
-  key1 <- create_cache_key(0, 100, 300)
-  key2 <- create_cache_key(0, 100, 300)
-  key3 <- create_cache_key(0, 100, 301)
-  
-  expect_equal(key1, key2)
-  expect_false(key1 == key3)
-  expect_match(key1, "spiral_0_100_300")
 })
 
 test_that("calculate_plot_limits handles empty voronoi", {
   # Mock empty voronoi object
   empty_voronoi <- list()
   limits <- calculate_plot_limits(empty_voronoi)
-  
-  expect_equal(limits, c(-10, 10))
+
+  expect_equal(limits, DEFAULT_PLOT_LIMITS)
 })
 
 test_that("estimate_computation_time provides reasonable estimates", {

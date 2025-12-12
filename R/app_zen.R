@@ -14,7 +14,10 @@ library(here)
 # Theme must be loaded first
 source(here::here("R/theme.R"))
 
-# Utilities
+# Utilities (order matters: constants first, then cache_manager)
+source(here::here("R/utils/constants.R"))
+source(here::here("R/utils/cache_manager.R"))
+source(here::here("R/utils/color_utils.R"))
 source(here::here("R/utils/spiral_math.R"))
 source(here::here("R/utils/performance.R"))
 

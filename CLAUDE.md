@@ -4,12 +4,14 @@
 Spiralizer is an R Shiny web application that creates beautiful Voronoi diagrams based on Fermat spirals. The app is deployed at [pjt222.shinyapps.io/spiralizer](https://pjt222.shinyapps.io/spiralizer/).
 
 ## Technical Stack
-- **Language**: R
+- **Language**: R (with optional Rcpp for performance)
 - **Framework**: Shiny with bslib (Bootstrap 5, darkly theme)
 - **Key Dependencies**:
   - `bslib`: Modern Bootstrap 5 UI framework
   - `tessellation`: Core package for Voronoi diagram creation
   - `viridisLite`: Color palette generation
+  - `config`: Configuration management (default/development/production)
+  - `memoise` + `cachem`: Computation caching
 - **Dependency Management**: renv
 
 ## Current Architecture (bslib Zen Mode)
@@ -40,17 +42,84 @@ page_navbar
 spiralizer/
 ├── R/
 │   ├── app_zen.R              # Main application
-│   ├── theme.R                # bslib theme configuration
+│   ├── theme.R                # bslib theme + zen_colors + palette_choices
 │   ├── modules/
 │   │   ├── ui_controls.R      # Control panel module
 │   │   └── ui_plot.R          # Plot output module
 │   └── utils/
+│       ├── constants.R        # Config-driven constants (loads config.yml)
+│       ├── cache_manager.R    # Memoized Voronoi computation
+│       ├── color_utils.R      # Centralized get_color_palette()
 │       ├── spiral_math.R      # Fermat spiral + Voronoi computation
 │       └── performance.R      # Performance mode detection
+├── src/
+│   └── spiral_rcpp.cpp        # C++ implementations (optional, ~10x speedup)
+├── config.yml                 # Configuration (default/development/production)
 ├── www/
 │   └── css/zen-overlay.css    # Minimal CSS enhancements
 └── docs/                      # Documentation
 ```
+
+## Configuration System
+
+### config.yml Structure
+```yaml
+default:
+  spiral:
+    max_points: 5000
+    min_points: 3
+    default_points: 300
+  sliders:
+    angle_min: 0
+    angle_max: 1000
+    density_min: 3
+    density_max: 2000
+  reactive:
+    debounce_ms: 300
+  cache:
+    max_size_mb: 100
+    max_age_seconds: 3600
+  palette:
+    default: "turbo"
+  export:
+    png_size: 3000
+    png_resolution: 300
+    svg_size: 10
+
+development:
+  # Smaller limits for testing
+
+production:
+  # Full limits for deployed app
+```
+
+### Switching Configurations
+```r
+# Set environment variable before loading
+Sys.setenv(R_CONFIG_ACTIVE = "development")
+
+# Or reload at runtime
+reload_config()
+get_config_name()  # Returns active config name
+```
+
+### Important: config Package Usage
+Do NOT use `library(config)` - it masks `base::get()` and `base::merge()`.
+Always use `config::get()` directly.
+
+## Performance Enhancements
+
+### Rcpp C++ Backend (Optional)
+The `src/spiral_rcpp.cpp` file provides C++ implementations:
+- `generate_spiral_cpp()` - ~10x faster spiral point generation
+- `calculate_limits_cpp()` - Fast plot limit calculation
+
+The R code auto-detects if Rcpp functions are available and uses them.
+
+### Caching Strategy
+- `memoise` + `cachem` for Voronoi computation caching
+- Cache size and TTL configurable via `config.yml`
+- Debounced slider inputs (300ms default) prevent computation spam
 
 ## Key Insights
 

@@ -49,7 +49,7 @@ docs/*.pdf
 .env
 .env.local
 secrets.json
-config.yml
+config.local.yml
 credentials.json
 
 # Cache and temporary data

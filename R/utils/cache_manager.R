@@ -3,10 +3,10 @@
 library(memoise)
 library(cachem)
 
-# Create cache with size limit (100MB) and time-based expiration
+# Create cache with size limit and time-based expiration (from config)
 spiral_cache <- cachem::cache_mem(
-  max_size = 100 * 1024^2,  # 100MB
-  max_age = 3600  # 1 hour TTL
+  max_size = CACHE_MAX_SIZE_MB * 1024^2,
+  max_age = CACHE_MAX_AGE_SECONDS
 )
 
 #' Memoized Voronoi Computation
@@ -40,10 +40,11 @@ clear_spiral_cache <- function() {
 #' Get Cache Statistics
 #' @export
 get_cache_stats <- function() {
+  max_bytes <- CACHE_MAX_SIZE_MB * 1024^2
   list(
     size = spiral_cache$size(),
-    max_size = 100 * 1024^2,
-    usage_percent = round((spiral_cache$size() / (100 * 1024^2)) * 100, 2)
+    max_size = max_bytes,
+    usage_percent = round((spiral_cache$size() / max_bytes) * 100, 2)
   )
 }
 

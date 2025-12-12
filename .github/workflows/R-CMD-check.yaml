@@ -40,7 +40,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libglu1-mesa-dev libgl1-mesa-dev
 
       - name: Setup renv
         uses: r-lib/actions/setup-renv@v2
@@ -53,6 +53,9 @@ jobs:
         run: |
           Rscript -e "
             source('R/theme.R')
+            source('R/utils/constants.R')
+            source('R/utils/cache_manager.R')
+            source('R/utils/color_utils.R')
             source('R/utils/spiral_math.R')
             source('R/utils/performance.R')
             source('R/modules/ui_controls.R')

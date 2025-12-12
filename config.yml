@@ -1,0 +1,104 @@
+default:
+  # Spiral generation limits
+  spiral:
+    max_points: 5000
+    min_points: 3
+    max_angle_range: 1000
+    default_points: 300
+
+  # UI slider settings
+  sliders:
+    angle_min: 0
+    angle_max: 1000
+    density_min: 3
+    density_max: 2000
+
+  # Reactive settings
+  reactive:
+    debounce_ms: 300
+
+  # Plot settings
+  plot:
+    default_limits: [-10, 10]
+    limit_padding: 1.1
+
+  # Export settings
+  export:
+    png_size: 3000
+    png_resolution: 300
+    svg_size: 10
+
+  # Cache settings
+  cache:
+    max_size_mb: 100
+    max_age_seconds: 3600
+
+  # Default palette
+  palette:
+    default: "turbo"
+
+# Development configuration (more verbose, smaller limits for testing)
+development:
+  spiral:
+    max_points: 2000
+    min_points: 3
+    max_angle_range: 500
+    default_points: 200
+
+  sliders:
+    angle_min: 0
+    angle_max: 500
+    density_min: 3
+    density_max: 1000
+
+  reactive:
+    debounce_ms: 200
+
+  plot:
+    default_limits: [-10, 10]
+    limit_padding: 1.1
+
+  export:
+    png_size: 1500
+    png_resolution: 150
+    svg_size: 8
+
+  cache:
+    max_size_mb: 50
+    max_age_seconds: 1800
+
+  palette:
+    default: "turbo"
+
+# Production configuration (optimized for deployed app)
+production:
+  spiral:
+    max_points: 5000
+    min_points: 3
+    max_angle_range: 1000
+    default_points: 300
+
+  sliders:
+    angle_min: 0
+    angle_max: 1000
+    density_min: 3
+    density_max: 2000
+
+  reactive:
+    debounce_ms: 300
+
+  plot:
+    default_limits: [-10, 10]
+    limit_padding: 1.1
+
+  export:
+    png_size: 3000
+    png_resolution: 300
+    svg_size: 10
+
+  cache:
+    max_size_mb: 100
+    max_age_seconds: 3600
+
+  palette:
+    default: "turbo"

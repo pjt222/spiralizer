@@ -38,9 +38,9 @@ zen_controls_ui <- function(id) {
         sliderInput(
           ns("angle_start"),
           label = "Start",
-          min = 0,
-          max = 1000,
-          value = 0,
+          min = SLIDER_ANGLE_MIN,
+          max = SLIDER_ANGLE_MAX,
+          value = SLIDER_ANGLE_MIN,
           step = 1,
           width = "100%"
         ),
@@ -49,8 +49,8 @@ zen_controls_ui <- function(id) {
         sliderInput(
           ns("angle_end"),
           label = "End",
-          min = 0,
-          max = 1000,
+          min = SLIDER_ANGLE_MIN,
+          max = SLIDER_ANGLE_MAX,
           value = 100,
           step = 1,
           width = "100%"
@@ -60,9 +60,9 @@ zen_controls_ui <- function(id) {
         sliderInput(
           ns("point_density"),
           label = "Density",
-          min = 3,
-          max = 2000,
-          value = 300,
+          min = SLIDER_DENSITY_MIN,
+          max = SLIDER_DENSITY_MAX,
+          value = SPIRAL_DEFAULT_POINTS,
           step = 1,
           width = "100%"
         )
@@ -84,7 +84,7 @@ zen_controls_ui <- function(id) {
           ns("color_palette"),
           label = NULL,
           choices = palette_choices,
-          selected = "turbo",
+          selected = DEFAULT_PALETTE,
           width = "100%"
         ),
         input_switch(
@@ -114,10 +114,10 @@ zen_controls_server <- function(id) {
 
     # Reactive values for parameters
     params <- reactiveValues(
-      angle_start = 0,
+      angle_start = SLIDER_ANGLE_MIN,
       angle_end = 100,
-      point_density = 300,
-      color_palette = "turbo",
+      point_density = SPIRAL_DEFAULT_POINTS,
+      color_palette = DEFAULT_PALETTE,
       invert_palette = FALSE
     )
 
@@ -126,9 +126,9 @@ zen_controls_server <- function(id) {
     # ─────────────────────────────────────────────────────────────────
 
     # Create debounced reactive for each input
-    angle_start_d <- reactive({ input$angle_start }) |> debounce(300)
-    angle_end_d <- reactive({ input$angle_end }) |> debounce(300)
-    point_density_d <- reactive({ input$point_density }) |> debounce(300)
+    angle_start_d <- reactive({ input$angle_start }) |> debounce(DEBOUNCE_MS)
+    angle_end_d <- reactive({ input$angle_end }) |> debounce(DEBOUNCE_MS)
+    point_density_d <- reactive({ input$point_density }) |> debounce(DEBOUNCE_MS)
 
     # Update params from debounced inputs
     observe({

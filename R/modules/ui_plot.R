@@ -153,23 +153,12 @@ zen_plot_server <- function(id, params) {
         ylab = ""
       )
 
-      # Get color palette
-      n_colors <- data$bounded_count
-      colors <- switch(params$color_palette,
-        "turbo" = viridisLite::turbo(n_colors),
-        "viridis" = viridisLite::viridis(n_colors),
-        "plasma" = viridisLite::plasma(n_colors),
-        "inferno" = viridisLite::inferno(n_colors),
-        "magma" = viridisLite::magma(n_colors),
-        "cividis" = viridisLite::cividis(n_colors),
-        "zen_mono" = colorRampPalette(c(zen_colors$black, zen_colors$accent))(n_colors),
-        viridisLite::turbo(n_colors)  # default fallback
+      # Get color palette (centralized in color_utils.R)
+      colors <- get_color_palette(
+        params$color_palette,
+        data$bounded_count,
+        params$invert_palette
       )
-
-      # Invert palette if requested
-      if (isTRUE(params$invert_palette)) {
-        colors <- rev(colors)
-      }
 
       # Draw Voronoi diagram
       tryCatch({
@@ -212,22 +201,12 @@ zen_plot_server <- function(id, params) {
       plot(NULL, xlim = plot_limits, ylim = plot_limits,
            asp = 1, axes = FALSE, xlab = "", ylab = "")
 
-      n_colors <- data$bounded_count
-      colors <- switch(params$color_palette,
-        "turbo" = viridisLite::turbo(n_colors),
-        "viridis" = viridisLite::viridis(n_colors),
-        "plasma" = viridisLite::plasma(n_colors),
-        "inferno" = viridisLite::inferno(n_colors),
-        "magma" = viridisLite::magma(n_colors),
-        "cividis" = viridisLite::cividis(n_colors),
-        "zen_mono" = colorRampPalette(c(zen_colors$black, zen_colors$accent))(n_colors),
-        viridisLite::turbo(n_colors)
+      # Get color palette (centralized in color_utils.R)
+      colors <- get_color_palette(
+        params$color_palette,
+        data$bounded_count,
+        params$invert_palette
       )
-
-      # Invert palette if requested
-      if (isTRUE(params$invert_palette)) {
-        colors <- rev(colors)
-      }
 
       suppressMessages(
         tessellation::plotVoronoiDiagram(
@@ -247,7 +226,11 @@ zen_plot_server <- function(id, params) {
         data <- spiral_data()
         req(data)
 
-        png(file, width = 3000, height = 3000, res = 300, bg = zen_colors$black)
+        png(file,
+            width = EXPORT_PNG_SIZE,
+            height = EXPORT_PNG_SIZE,
+            res = EXPORT_PNG_RES,
+            bg = zen_colors$black)
         render_plot(data)
         dev.off()
       }
@@ -260,7 +243,10 @@ zen_plot_server <- function(id, params) {
         data <- spiral_data()
         req(data)
 
-        svg(file, width = 10, height = 10, bg = zen_colors$black)
+        svg(file,
+            width = EXPORT_SVG_SIZE,
+            height = EXPORT_SVG_SIZE,
+            bg = zen_colors$black)
         render_plot(data)
         dev.off()
       }
