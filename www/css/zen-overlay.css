@@ -1,0 +1,212 @@
+/**
+ * zen-overlay.css - Minimal zen effects overlay for bslib
+ *
+ * This file contains only zen-specific styling not achievable
+ * through Bootstrap 5 / bslib theming. Keep this file minimal.
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CSS CUSTOM PROPERTIES
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Zen animation timings */
+  --zen-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --zen-transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Zen effects */
+  --zen-glow: 0 0 20px rgba(0, 255, 136, 0.3);
+  --zen-glow-subtle: 0 0 10px rgba(0, 255, 136, 0.15);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   GLASS-MORPHISM SIDEBAR
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.bslib-sidebar-layout > .sidebar,
+.zen-sidebar {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(26, 26, 26, 0.9) !important;
+  border-right: 1px solid rgba(42, 42, 42, 0.5) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BUTTON GLOW EFFECTS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  box-shadow: var(--zen-glow);
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+  box-shadow: var(--zen-glow-subtle);
+}
+
+.btn-outline-light:hover,
+.btn-outline-light:focus {
+  box-shadow: 0 0 15px rgba(224, 224, 224, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SLIDER ENHANCEMENTS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Shiny slider track */
+.irs--shiny .irs-bar {
+  background: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+}
+
+.irs--shiny .irs-handle {
+  background: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+  transition: var(--zen-transition-fast);
+}
+
+.irs--shiny .irs-handle:hover {
+  box-shadow: var(--zen-glow);
+  transform: scale(1.1);
+}
+
+.irs--shiny .irs-line {
+  background: var(--bs-secondary) !important;
+  border-color: var(--bs-secondary) !important;
+}
+
+.irs--shiny .irs-single {
+  background: var(--bs-primary) !important;
+  color: var(--bs-body-bg) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PERFORMANCE INDICATOR
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.performance-indicator {
+  background: rgba(26, 26, 26, 0.8);
+  border: 1px solid var(--bs-secondary);
+}
+
+.indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--bs-primary);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   EXPORT BUTTONS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.export-controls {
+  opacity: 0.7;
+  transition: var(--zen-transition);
+}
+
+.export-controls:hover {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CARD REFINEMENTS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.card {
+  transition: var(--zen-transition);
+}
+
+.card:hover {
+  border-color: rgba(0, 255, 136, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SELECT INPUT (SELECTIZE)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Allow dropdown to overflow card and sidebar */
+.overflow-visible {
+  overflow: visible !important;
+}
+
+.bslib-sidebar-layout > .sidebar {
+  overflow: visible !important;
+}
+
+.selectize-control .selectize-input {
+  background: var(--bs-body-bg) !important;
+  border-color: var(--bs-secondary) !important;
+  transition: var(--zen-transition-fast);
+}
+
+.selectize-control .selectize-input.focus {
+  border-color: var(--bs-primary) !important;
+  box-shadow: var(--zen-glow-subtle);
+}
+
+.selectize-dropdown {
+  background: var(--bs-body-bg) !important;
+  border-color: var(--bs-secondary) !important;
+}
+
+.selectize-dropdown .option {
+  transition: var(--zen-transition-fast);
+}
+
+.selectize-dropdown .option:hover,
+.selectize-dropdown .option.active {
+  background: rgba(0, 255, 136, 0.1) !important;
+  color: var(--bs-primary) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   NAVBAR REFINEMENTS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.navbar {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.navbar .nav-link:hover {
+  color: var(--bs-primary) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   REDUCED MOTION PREFERENCE
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PRINT STYLES
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@media print {
+  .sidebar,
+  .navbar,
+  .export-controls {
+    display: none !important;
+  }
+
+  .plot-container {
+    width: 100% !important;
+    height: auto !important;
+  }
+}

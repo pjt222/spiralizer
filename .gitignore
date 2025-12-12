@@ -1,4 +1,65 @@
-.Rproj.user
+# R and RStudio files
+.Rproj.user/
 .Rhistory
 .RData
 .Ruserdata
+.Renviron
+
+# renv cache (optional - can be committed)
+renv/library/
+renv/local/
+renv/cellar/
+renv/lock/
+renv/python/
+renv/staging/
+
+# Shiny deployment and credentials
+rsconnect/
+*.dcf
+
+# Logs and temporary files
+*.log
+*.tmp
+.httr-oauth
+
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Output files
+*.png
+*.pdf
+*.svg
+docs/*.png
+docs/*.pdf
+
+# Secrets and credentials
+.env
+.env.local
+secrets.json
+config.yml
+credentials.json
+
+# Cache and temporary data
+cache/
+tmp/
+temp/
+
+# Personal notes and development files
+NOTES.md
+TODO.md
+*_PRIVATE.md
+dev/
+scratch/

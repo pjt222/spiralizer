@@ -1,0 +1,285 @@
+/* zen-theme.css - Minimalist dark mode aesthetic */
+
+/* === Color Palette === */
+:root {
+  --zen-black: #0a0a0a;      /* Deep space black */
+  --zen-gray-dark: #1a1a1a;   /* Input backgrounds */
+  --zen-gray-mid: #2a2a2a;    /* Borders, dividers */
+  --zen-gray-light: #888888;  /* Muted text */
+  --zen-white: #e0e0e0;       /* Primary text */
+  --zen-accent: #00ff88;      /* Ethereal green glow */
+  --zen-accent-dim: #00ff8833; /* Subtle glow */
+  --zen-error: #ff0044;       /* Error state */
+  
+  /* Transitions */
+  --zen-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --zen-transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* === Base Styles === */
+body {
+  background-color: var(--zen-black);
+  color: var(--zen-white);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* === Typography === */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 200;
+  letter-spacing: 0.05em;
+  margin: 0;
+  padding: 0;
+}
+
+/* === Control Panel === */
+.control-panel {
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--zen-gray-mid);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  transition: var(--zen-transition);
+}
+
+.control-panel:hover {
+  border-color: var(--zen-accent-dim);
+  box-shadow: 0 8px 32px rgba(0, 255, 136, 0.1);
+}
+
+/* === Form Elements === */
+.form-label {
+  color: var(--zen-gray-light);
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* === Sliders (Range Inputs) === */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--zen-gray-mid);
+  border-radius: 2px;
+  outline: none;
+  transition: var(--zen-transition);
+  margin: 16px 0;
+}
+
+input[type="range"]:hover {
+  background: var(--zen-gray-mid);
+  box-shadow: 0 0 8px var(--zen-accent-dim);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--zen-accent);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: var(--zen-transition-fast);
+  box-shadow: 0 0 4px var(--zen-accent);
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 12px var(--zen-accent);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--zen-accent);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: var(--zen-transition-fast);
+  box-shadow: 0 0 4px var(--zen-accent);
+  border: none;
+}
+
+/* === Numeric Inputs === */
+input[type="number"] {
+  background: var(--zen-gray-dark);
+  border: 1px solid var(--zen-gray-mid);
+  color: var(--zen-white);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  transition: var(--zen-transition);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input[type="number"]:focus {
+  outline: none;
+  border-color: var(--zen-accent);
+  box-shadow: 0 0 0 2px var(--zen-accent-dim);
+}
+
+input[type="number"]:hover {
+  border-color: var(--zen-gray-light);
+}
+
+/* === Tooltips === */
+.tooltip {
+  position: absolute;
+  background: var(--zen-gray-dark);
+  color: var(--zen-white);
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border: 1px solid var(--zen-gray-mid);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+}
+
+.tooltip.visible {
+  opacity: 1;
+}
+
+/* === Loading State === */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 10, 10, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.loading-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--zen-gray-mid);
+  border-top-color: var(--zen-accent);
+  border-radius: 50%;
+  animation: zen-spin 1s linear infinite;
+}
+
+@keyframes zen-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* === Plot Container === */
+.plot-container {
+  position: relative;
+  background: var(--zen-black);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: inset 0 0 32px rgba(0, 0, 0, 0.5);
+}
+
+.plot-container canvas {
+  transition: opacity 0.5s ease;
+}
+
+/* === Breathing Animation for Idle === */
+@keyframes zen-breathe {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
+.zen-breathing {
+  animation: zen-breathe 4s ease-in-out infinite;
+}
+
+/* === Keyboard Shortcuts Overlay === */
+.shortcuts-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 10, 10, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 2000;
+}
+
+.shortcuts-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.shortcuts-content {
+  background: var(--zen-gray-dark);
+  border: 1px solid var(--zen-gray-mid);
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 500px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.shortcut-item {
+  display: flex;
+  justify-content: space-between;
+  margin: 12px 0;
+}
+
+.shortcut-key {
+  background: var(--zen-gray-mid);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+  .control-panel {
+    width: 100%;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
+  body {
+    overflow: auto;
+  }
+}
+
+/* === Accessibility === */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* === Focus Styles === */
+*:focus-visible {
+  outline: 2px solid var(--zen-accent);
+  outline-offset: 2px;
+}
