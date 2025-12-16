@@ -1,0 +1,36 @@
+# Development files
+^\.github$
+^\.Rproj\.user$
+^\.Rhistory$
+^\.RData$
+^\.RDataTmp$
+^spiralizer\.Rproj$
+^\.gitignore$
+^\.git$
+
+# Documentation and notes
+^CLAUDE\.md$
+^README\.Rmd$
+^docs$
+^CODE_REVIEW\.md$
+
+# renv (use DESCRIPTION for package dependencies)
+^renv$
+^renv\.lock$
+^\.Rprofile$
+
+# Testing and CI
+^tests/benchmarks$
+^\.lintr$
+^codecov\.yml$
+^_pkgdown\.yml$
+
+# Legacy and development files
+^www$
+^config\.yml$
+^run_zen\.R$
+^deploy_zen\.R$
+
+# IDE
+^\.vscode$
+^\.idea$

@@ -2,8 +2,8 @@
 #
 # This file defines the visual theme using bslib with Bootstrap 5
 # and the Bootswatch "darkly" preset as foundation.
-
-library(bslib)
+#
+#' @import bslib
 
 #' Spiralizer Theme
 #'

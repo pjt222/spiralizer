@@ -105,13 +105,23 @@ extract_voronoi_vertices <- function(voronoi_object) {
       edges <- cell[["cell"]]
       n_edges <- length(edges)
       if (n_edges > 0) {
-        # Pre-allocate matrix for this cell's vertices
-        cell_vertices <- matrix(NA_real_, nrow = n_edges * 2, ncol = 2)
+        # Collect vertices safely
+        vertices <- list()
         for (j in seq_len(n_edges)) {
-          cell_vertices[2 * j - 1, ] <- edges[[j]][["A"]]
-          cell_vertices[2 * j, ] <- edges[[j]][["B"]]
+          edge <- edges[[j]]
+          pt_a <- edge[["A"]]
+          pt_b <- edge[["B"]]
+          # Only use 2D coordinates (first 2 elements)
+          if (!is.null(pt_a) && length(pt_a) >= 2) {
+            vertices[[length(vertices) + 1]] <- pt_a[1:2]
+          }
+          if (!is.null(pt_b) && length(pt_b) >= 2) {
+            vertices[[length(vertices) + 1]] <- pt_b[1:2]
+          }
         }
-        vertex_list[[i]] <- cell_vertices
+        if (length(vertices) > 0) {
+          vertex_list[[i]] <- do.call(rbind, vertices)
+        }
       }
     }
   }

@@ -2,9 +2,10 @@
 #
 # Handles the spiral visualization rendering and export functionality.
 # The plot fills the available viewport space.
-
-library(shiny)
-library(bslib)
+#
+#' @import shiny
+#' @import bslib
+#' @importFrom grDevices dev.off png svg colorRampPalette
 
 # ═══════════════════════════════════════════════════════════════════════
 # UI MODULE
@@ -69,6 +70,71 @@ zen_plot_server <- function(id, params) {
     # REACTIVE COMPUTATION
     # ─────────────────────────────────────────────────────────────────
 
+    # Load pre-computed cache if available (RDS or DuckDB)
+    cache_config <- local({
+      # Check for DuckDB first (preferred for large caches)
+      db_paths <- c(
+        here::here("inst", "app", "data", "spiral_cache.duckdb"),
+        system.file("app", "data", "spiral_cache.duckdb", package = "spiralizer")
+      )
+      for (path in db_paths) {
+        if (nzchar(path) && file.exists(path) && requireNamespace("duckdb", quietly = TRUE)) {
+          message(sprintf("[Cache] Using DuckDB cache: %s", path))
+          return(list(type = "duckdb", path = path, data = NULL))
+        }
+      }
+
+      # Fall back to RDS
+      rds_paths <- c(
+        here::here("inst", "app", "data", "spiral_cache.rds"),
+        system.file("app", "data", "spiral_cache.rds", package = "spiralizer")
+      )
+      for (path in rds_paths) {
+        if (nzchar(path) && file.exists(path)) {
+          message(sprintf("[Cache] Loading RDS cache: %s", path))
+          cache <- tryCatch(readRDS(path), error = function(e) list())
+          message(sprintf("[Cache] Loaded %d pre-computed entries", length(cache)))
+          return(list(type = "rds", path = path, data = cache))
+        }
+      }
+
+      list(type = "none", path = NULL, data = list())
+    })
+
+    # DuckDB connection (lazy, kept open for session)
+    duckdb_con <- if (cache_config$type == "duckdb") {
+      DBI::dbConnect(duckdb::duckdb(), cache_config$path, read_only = TRUE)
+    } else {
+      NULL
+    }
+
+    # Clean up DuckDB connection on session end
+    if (!is.null(duckdb_con)) {
+      session$onSessionEnded(function() {
+        tryCatch(DBI::dbDisconnect(duckdb_con), error = function(e) NULL)
+      })
+    }
+
+    # Helper to lookup from DuckDB
+    lookup_duckdb <- function(cache_key) {
+      if (is.null(duckdb_con)) return(NULL)
+      tryCatch({
+        result <- DBI::dbGetQuery(duckdb_con,
+          "SELECT data FROM spiral_cache WHERE cache_key = ?",
+          params = list(cache_key)
+        )
+        if (nrow(result) > 0) {
+          unserialize(result$data[[1]])
+        } else {
+          NULL
+        }
+      }, error = function(e) NULL)
+    }
+
+    # Session-level cache (starts with RDS entries if available)
+    precomputed_cache <- if (cache_config$type == "rds") cache_config$data else list()
+    session_cache <- reactiveVal(precomputed_cache)
+
     spiral_data <- reactive({
       # Require all parameters
       req(params$angle_start, params$angle_end, params$point_density)
@@ -89,6 +155,30 @@ zen_plot_server <- function(id, params) {
         return(NULL)
       }
 
+      # Create cache key from parameters
+      cache_key <- paste(params$angle_start, params$angle_end, params$point_density, sep = "_")
+
+      # Check session cache first (includes pre-loaded RDS)
+      cache <- session_cache()
+      if (cache_key %in% names(cache)) {
+        message(sprintf("[Cache HIT] %s", cache_key))
+        return(cache[[cache_key]])
+      }
+
+      # Check DuckDB if available
+      if (cache_config$type == "duckdb") {
+        db_result <- lookup_duckdb(cache_key)
+        if (!is.null(db_result)) {
+          message(sprintf("[DuckDB HIT] %s", cache_key))
+          # Add to session cache for faster subsequent access
+          cache[[cache_key]] <- db_result
+          session_cache(cache)
+          return(db_result)
+        }
+      }
+
+      message(sprintf("[Cache MISS] Computing %s", cache_key))
+
       # Time the computation
       start_time <- Sys.time()
 
@@ -106,12 +196,18 @@ zen_plot_server <- function(id, params) {
         # Calculate elapsed time
         elapsed_ms <- as.numeric(difftime(Sys.time(), start_time, units = "secs")) * 1000
 
-        list(
+        result <- list(
           points = points,
           voronoi = voronoi_result$voronoi,
           bounded_count = voronoi_result$bounded_count,
           elapsed_ms = elapsed_ms
         )
+
+        # Store in session cache
+        cache[[cache_key]] <- result
+        session_cache(cache)
+
+        result
 
       }, error = function(e) {
         showNotification(

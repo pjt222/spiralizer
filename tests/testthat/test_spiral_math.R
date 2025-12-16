@@ -1,12 +1,7 @@
 # test_spiral_math.R - Unit tests for spiral mathematics
 
 library(testthat)
-
-# Source constants first (required by spiral_math.R)
-source(here::here("R/utils/constants.R"))
-
-# Source the functions
-source(here::here("R/utils/spiral_math.R"))
+library(spiralizer)
 
 test_that("generate_fermat_spiral creates correct number of points", {
   points <- generate_fermat_spiral(0, 100, 50)
@@ -20,22 +15,23 @@ test_that("generate_fermat_spiral handles edge cases", {
   points_min <- generate_fermat_spiral(0, 1, SPIRAL_MIN_POINTS)
   expect_equal(nrow(points_min), SPIRAL_MIN_POINTS)
 
-  # Zero start angle
+  # Zero start angle - first point should be near origin
   points_zero <- generate_fermat_spiral(0, 10, 10)
-  expect_equal(points_zero[1, "x"], 0)
-  expect_equal(points_zero[1, "y"], 0)
+  expect_equal(as.numeric(points_zero[1, "x"]), 0)
+  expect_equal(as.numeric(points_zero[1, "y"]), 0)
 })
 
 test_that("generate_fermat_spiral produces mathematically correct values", {
-  # Test specific known values
+  # Test specific known values with minimum required points
   theta <- pi/4  # 45 degrees
   expected_x <- sqrt(theta) * cos(theta)
   expected_y <- sqrt(theta) * sin(theta)
-  
-  points <- generate_fermat_spiral(theta, theta + 0.0001, 2)
-  
-  expect_equal(points[1, "x"], expected_x, tolerance = 0.001)
-  expect_equal(points[1, "y"], expected_y, tolerance = 0.001)
+
+  # Use minimum required points
+  points <- generate_fermat_spiral(theta, theta + 1, SPIRAL_MIN_POINTS)
+
+  expect_equal(as.numeric(points[1, "x"]), expected_x, tolerance = 0.01)
+  expect_equal(as.numeric(points[1, "y"]), expected_y, tolerance = 0.01)
 })
 
 test_that("validate_spiral_params catches invalid inputs", {

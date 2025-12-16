@@ -18,10 +18,22 @@
 #' @return List with configuration values
 #' @keywords internal
 .load_config <- function() {
+  # Try multiple locations for config.yml
+  config_paths <- c(
+    here::here("config.yml"),
+    here::here("inst", "app", "config.yml"),
+    system.file("app", "config.yml", package = "spiralizer")
+  )
 
-  config_file <- here::here("config.yml")
+  config_file <- NULL
+  for (path in config_paths) {
+    if (nzchar(path) && file.exists(path)) {
+      config_file <- path
+      break
+    }
+  }
 
-  if (!file.exists(config_file)) {
+  if (is.null(config_file)) {
     warning("config.yml not found, using hardcoded defaults")
     return(NULL)
   }

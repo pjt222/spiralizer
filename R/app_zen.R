@@ -2,28 +2,10 @@
 #
 # Minimalist Voronoi spiral generator with bslib/Bootstrap 5 UI.
 # The spiral visualization is the focus; UI disappears when not needed.
-
-library(shiny)
-library(bslib)
-library(here)
-
-# ═══════════════════════════════════════════════════════════════════════
-# SOURCE DEPENDENCIES
-# ═══════════════════════════════════════════════════════════════════════
-
-# Theme must be loaded first
-source(here::here("R/theme.R"))
-
-# Utilities (order matters: constants first, then cache_manager)
-source(here::here("R/utils/constants.R"))
-source(here::here("R/utils/cache_manager.R"))
-source(here::here("R/utils/color_utils.R"))
-source(here::here("R/utils/spiral_math.R"))
-source(here::here("R/utils/performance.R"))
-
-# Modules
-source(here::here("R/modules/ui_controls.R"))
-source(here::here("R/modules/ui_plot.R"))
+#
+#' @import shiny
+#' @import bslib
+#' @import here
 
 # ═══════════════════════════════════════════════════════════════════════
 # UI DEFINITION
@@ -139,7 +121,15 @@ zen_server <- function(input, output, session) {
 }
 
 # ═══════════════════════════════════════════════════════════════════════
-# RUN APPLICATION
+# APPLICATION OBJECT
 # ═══════════════════════════════════════════════════════════════════════
 
-shinyApp(ui = zen_ui(), server = zen_server)
+#' Create Spiralizer App Object
+#'
+#' Returns a Shiny app object that can be run with \code{shiny::runApp()}.
+#'
+#' @return A Shiny app object
+#' @export
+spiralizer_app <- function() {
+  shinyApp(ui = zen_ui(), server = zen_server)
+}

@@ -2,9 +2,9 @@
 #
 # Provides spiral parameter controls using bslib cards.
 # Minimal, focused interface with all essential controls visible.
-
-library(shiny)
-library(bslib)
+#
+#' @import shiny
+#' @import bslib
 
 # ═══════════════════════════════════════════════════════════════════════
 # UI MODULE
@@ -42,7 +42,8 @@ zen_controls_ui <- function(id) {
           max = SLIDER_ANGLE_MAX,
           value = SLIDER_ANGLE_MIN,
           step = 1,
-          width = "100%"
+          width = "100%",
+          animate = animationOptions(interval = 2000, loop = TRUE)
         ),
 
         # End Angle
@@ -53,7 +54,8 @@ zen_controls_ui <- function(id) {
           max = SLIDER_ANGLE_MAX,
           value = 100,
           step = 1,
-          width = "100%"
+          width = "100%",
+          animate = animationOptions(interval = 2000, loop = TRUE)
         ),
 
         # Point Density
@@ -64,7 +66,8 @@ zen_controls_ui <- function(id) {
           max = SLIDER_DENSITY_MAX,
           value = SPIRAL_DEFAULT_POINTS,
           step = 1,
-          width = "100%"
+          width = "100%",
+          animate = animationOptions(interval = 2000, loop = TRUE)
         )
       )
     ),

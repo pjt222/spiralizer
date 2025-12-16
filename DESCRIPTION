@@ -1,0 +1,51 @@
+Package: spiralizer
+Title: Interactive Voronoi Diagrams from Fermat Spirals
+Version: 0.1.0
+Authors@R:
+    person("Philipp", "Thoss", , "ph.thoss@gmx.de", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-4672-2792"))
+Description: A Shiny web application that creates beautiful Voronoi diagrams
+    based on Fermat spirals. Features an interactive interface for exploring
+    spiral parameters, multiple color palettes, and high-resolution export
+    capabilities.
+License: MIT + file LICENSE
+URL: https://github.com/pjt222/spiralizer,
+    https://pjt222.shinyapps.io/spiralizer/
+BugReports: https://github.com/pjt222/spiralizer/issues
+Depends:
+    R (>= 4.1.0)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Collate:
+    'aaa-utils.R'
+    'RcppExports.R'
+    'constants.R'
+    'color_utils.R'
+    'spiral_math.R'
+    'cache_manager.R'
+    'performance.R'
+    'theme.R'
+    'ui_controls.R'
+    'ui_plot.R'
+    'app_zen.R'
+    'run_app.R'
+    'zzz.R'
+Imports:
+    bslib (>= 0.6.0),
+    cachem,
+    config,
+    grDevices,
+    here,
+    memoise,
+    shiny (>= 1.8.0),
+    tessellation,
+    viridisLite
+Suggests:
+    DBI,
+    duckdb,
+    Rcpp,
+    testthat (>= 3.0.0)
+LinkingTo:
+    Rcpp
+Config/testthat/edition: 3

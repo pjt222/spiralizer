@@ -2,6 +2,7 @@
 .Rproj.user/
 .Rhistory
 .RData
+.RDataTmp
 .Ruserdata
 .Renviron
 
@@ -63,3 +64,11 @@ TODO.md
 *_PRIVATE.md
 dev/
 scratch/
+
+# R package build artifacts
+*.tar.gz
+*.Rcheck/
+src/*.o
+src/*.so
+src/*.dll
+src/symbols.rds

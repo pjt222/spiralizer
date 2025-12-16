@@ -1,22 +1,106 @@
 # Spiralizer Project Memory
 
 ## Project Overview
-Spiralizer is an R Shiny web application that creates beautiful Voronoi diagrams based on Fermat spirals. The app is deployed at [pjt222.shinyapps.io/spiralizer](https://pjt222.shinyapps.io/spiralizer/).
+Spiralizer is an R package and Shiny web application that creates beautiful Voronoi diagrams based on Fermat spirals. The app is deployed at [pjt222.shinyapps.io/spiralizer](https://pjt222.shinyapps.io/spiralizer/).
 
 ## Technical Stack
 - **Language**: R (with optional Rcpp for performance)
 - **Framework**: Shiny with bslib (Bootstrap 5, darkly theme)
+- **Package Structure**: CRAN-compatible R package
 - **Key Dependencies**:
   - `bslib`: Modern Bootstrap 5 UI framework
   - `tessellation`: Core package for Voronoi diagram creation
   - `viridisLite`: Color palette generation
   - `config`: Configuration management (default/development/production)
   - `memoise` + `cachem`: Computation caching
-- **Dependency Management**: renv
+- **Dependency Management**: renv (for development), DESCRIPTION (for package)
 
-## Current Architecture (bslib Zen Mode)
+## Package Structure (CRAN-compatible)
 
-### UI Structure
+**Important**: R packages require a flat `R/` directory - no subdirectories allowed.
+See `docs/development-guides/r-package-structure.md` for details.
+
+```
+spiralizer/
+├── DESCRIPTION              # Package metadata and dependencies
+├── NAMESPACE                # Exports and imports
+├── LICENSE                  # MIT license
+├── README.md                # Package documentation
+├── .Rbuildignore            # Files to exclude from R CMD build
+│
+├── R/                       # Package R code (FLAT structure required)
+│   ├── aaa-utils.R          # Loaded first: %||% operator
+│   ├── RcppExports.R        # Auto-generated Rcpp wrappers
+│   ├── constants.R          # Config-driven constants
+│   ├── color_utils.R        # Centralized get_color_palette()
+│   ├── spiral_math.R        # Fermat spiral + Voronoi computation
+│   ├── cache_manager.R      # Memoized Voronoi computation (lazy init)
+│   ├── performance.R        # Performance mode detection
+│   ├── theme.R              # bslib theme + zen_colors + palette_choices
+│   ├── ui_controls.R        # Control panel module
+│   ├── ui_plot.R            # Plot output module
+│   ├── app_zen.R            # Main app UI/server + spiralizer_app()
+│   ├── run_app.R            # run_spiralizer() launcher function
+│   └── zzz.R                # Loaded last: package hooks
+│
+├── inst/                    # Installed files
+│   ├── app/                 # Shiny app for deployment
+│   │   ├── app.R            # App entry point
+│   │   ├── config.yml       # Configuration file
+│   │   └── www/             # Static assets
+│   │       ├── css/
+│   │       └── js/
+│   ├── archive/             # Legacy code
+│   │   └── app_legacy_semantic.R
+│   ├── docs/                # Documentation (installed with package)
+│   └── scripts/             # Utility scripts
+│       ├── deploy_zen.R
+│       └── run_zen.R
+│
+├── src/                     # C++ source (Rcpp)
+│   ├── spiral_rcpp.cpp      # C++ implementations
+│   └── RcppExports.cpp      # Auto-generated registration
+│
+├── man/                     # Generated documentation (roxygen2)
+├── tests/                   # Test suite
+│   ├── testthat/
+│   └── testthat.R
+├── docs/                    # Documentation
+│   ├── development-guides/  # Development best practices
+│   └── *.md                 # Architecture, design docs
+│
+├── renv/                    # renv library (development)
+├── renv.lock                # renv lockfile
+└── spiralizer.Rproj         # RStudio project
+```
+
+## Running the App
+
+### As installed package
+```r
+# Install the package
+devtools::install()
+
+# Run the app
+library(spiralizer)
+run_spiralizer()
+
+# Or get the app object
+app <- spiralizer_app()
+shiny::runApp(app)
+```
+
+### Development mode
+```r
+# From project root
+source(".Rprofile")  # Activate renv
+shiny::runApp("inst/app")
+
+# Or source directly
+source("inst/app/app.R")
+```
+
+## UI Structure
 ```
 page_navbar
 ├── nav_spacer()
@@ -31,38 +115,17 @@ page_navbar
             └── export buttons (PNG, SVG)
 ```
 
-### Key Design Decisions
+## Key Design Decisions
 1. **Pure bslib** - No custom JavaScript; all interactions via Shiny reactives
 2. **Collapsible sidebar** - `sidebar(open = "desktop")` auto-collapses on mobile
 3. **Minimal controls** - Only essential parameters exposed
 4. **Spiral-first** - Visualization dominates; UI disappears when not needed
-
-### File Structure
-```
-spiralizer/
-├── R/
-│   ├── app_zen.R              # Main application
-│   ├── theme.R                # bslib theme + zen_colors + palette_choices
-│   ├── modules/
-│   │   ├── ui_controls.R      # Control panel module
-│   │   └── ui_plot.R          # Plot output module
-│   └── utils/
-│       ├── constants.R        # Config-driven constants (loads config.yml)
-│       ├── cache_manager.R    # Memoized Voronoi computation
-│       ├── color_utils.R      # Centralized get_color_palette()
-│       ├── spiral_math.R      # Fermat spiral + Voronoi computation
-│       └── performance.R      # Performance mode detection
-├── src/
-│   └── spiral_rcpp.cpp        # C++ implementations (optional, ~10x speedup)
-├── config.yml                 # Configuration (default/development/production)
-├── www/
-│   └── css/zen-overlay.css    # Minimal CSS enhancements
-└── docs/                      # Documentation
-```
+5. **CRAN-compatible** - Proper package structure for distribution
 
 ## Configuration System
 
-### config.yml Structure
+Configuration is stored in `inst/app/config.yml`:
+
 ```yaml
 default:
   spiral:
@@ -85,20 +148,11 @@ default:
     png_size: 3000
     png_resolution: 300
     svg_size: 10
-
-development:
-  # Smaller limits for testing
-
-production:
-  # Full limits for deployed app
 ```
 
 ### Switching Configurations
 ```r
-# Set environment variable before loading
 Sys.setenv(R_CONFIG_ACTIVE = "development")
-
-# Or reload at runtime
 reload_config()
 get_config_name()  # Returns active config name
 ```
@@ -121,39 +175,22 @@ The R code auto-detects if Rcpp functions are available and uses them.
 - Cache size and TTL configurable via `config.yml`
 - Debounced slider inputs (300ms default) prevent computation spam
 
-## Key Insights
+## Key Exports
 
-### bslib Best Practices
-- Use `overflow: visible` on cards/sidebar for selectize dropdowns to escape
-- `input_switch()` provides clean toggle UI for boolean options
-- `layout_column_wrap()` for responsive button grids
-- Bootstrap utility classes (`mb-3`, `py-2`, `gap-2`) reduce custom CSS
+### App Functions
+- `run_spiralizer()` - Launch the Shiny app
+- `spiralizer_app()` - Get app object
+- `zen_ui()`, `zen_server()` - UI and server components
 
-### Shiny Module Patterns
-- Debounce slider inputs (300ms) to prevent computation spam
-- Pass `reactiveValues` between modules for shared state
-- Use `req()` to guard against NULL parameters
-- Keep download handlers in same module as data source
+### Spiral Math
+- `generate_fermat_spiral()` - Generate spiral points
+- `compute_voronoi()` - Compute Voronoi diagram
+- `validate_spiral_params()` - Parameter validation
 
-### CSS Minimal Approach
-- Let bslib/Bootstrap handle 90% of styling
-- Custom CSS only for: glass-morphism, glow effects, slider theming
-- Use CSS custom properties (`--zen-glow`, etc.) for consistency
-
-### What NOT to Do
-- Avoid custom JavaScript for basic interactions (bslib handles it)
-- Don't over-engineer with caching for simple computations
-- Skip presets/shortcuts in minimal UI - let users explore directly
-
-## Running the App
-```r
-# From RStudio
-source("R/app_zen.R")
-
-# Or with explicit renv activation
-source(".Rprofile")
-source("R/app_zen.R")
-```
+### Theme
+- `spiralizer_theme` - bslib theme object
+- `zen_colors` - Color palette list
+- `palette_choices` - Available color palettes
 
 ## Fermat Spiral Formula
 ```
@@ -171,10 +208,20 @@ Where θ ranges from `angle_start` to `angle_end` with `point_density` samples.
 - Descriptive variable names
 - roxygen2-style documentation comments
 - Consistent section headers with box-drawing characters
+- No `library()` calls in R/ files (use `@import` roxygen2 tags)
 
 ## Documentation
+
+### General Documentation
 See `docs/` folder:
 - `ARCHITECTURE.md` - System design and data flow
 - `DEVELOPMENT.md` - Developer setup guide
 - `BSLIB_THEMING.md` - Theme customization
 - `UI_DESIGN.md` - Design decisions
+- `TROUBLESHOOTING.md` - Common issues and solutions
+
+### Development Guides
+See `docs/development-guides/` folder:
+- `r-package-structure.md` - Lessons learned from R package development
+- `rcpp-integration.md` - C++ integration via Rcpp
+- `config-management.md` - Configuration management patterns
