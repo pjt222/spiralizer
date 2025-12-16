@@ -1,4 +1,4 @@
-# app_zen.R - Spiralizer Zen Mode Application
+# app.R - Spiralizer Application
 #
 # Minimalist Voronoi spiral generator with bslib/Bootstrap 5 UI.
 # The spiral visualization is the focus; UI disappears when not needed.
@@ -11,13 +11,14 @@
 # UI DEFINITION
 # ═══════════════════════════════════════════════════════════════════════
 
-#' Zen UI
+#' App UI
 #'
 #' Creates the main application UI using bslib components.
 #' Features a collapsible sidebar and full-viewport spiral display.
 #'
 #' @return Shiny UI object
-zen_ui <- function() {
+#' @export
+app_ui <- function() {
   page_navbar(
     # App title with icon
     title = tags$span(
@@ -34,7 +35,7 @@ zen_ui <- function() {
     fillable_mobile = TRUE,
 
     # Window title
-    window_title = "Spiralizer | Zen Mode",
+    window_title = "Spiralizer",
 
     # Navbar spacer (keeps title left-aligned)
     nav_spacer(),
@@ -56,11 +57,11 @@ zen_ui <- function() {
           class = "zen-sidebar",
 
           # Controls module
-          zen_controls_ui("controls")
+          controls_ui("controls")
         ),
 
         # Main plot area fills remaining space
-        zen_plot_ui("plot")
+        plot_ui("plot")
       )
     ),
 
@@ -73,8 +74,8 @@ zen_ui <- function() {
       tags$meta(name = "theme-color", content = "#0a0a0a"),
       tags$meta(name = "description", content = "Create beautiful Voronoi diagrams from Fermat spirals"),
 
-      # Custom zen CSS overlay (minimal, no JS)
-      tags$link(rel = "stylesheet", href = "css/zen-overlay.css")
+      # Custom CSS overlay (minimal, no JS)
+      tags$link(rel = "stylesheet", href = "css/overlay.css")
     )
   )
 }
@@ -83,7 +84,7 @@ zen_ui <- function() {
 # SERVER DEFINITION
 # ═══════════════════════════════════════════════════════════════════════
 
-#' Zen Server
+#' App Server
 #'
 #' Main server function handling module initialization,
 #' performance monitoring, and user interactions.
@@ -91,7 +92,8 @@ zen_ui <- function() {
 #' @param input Shiny input
 #' @param output Shiny output
 #' @param session Shiny session
-zen_server <- function(input, output, session) {
+#' @export
+app_server <- function(input, output, session) {
 
   # ─────────────────────────────────────────────────────────────────
   # PERFORMANCE SETUP
@@ -109,8 +111,8 @@ zen_server <- function(input, output, session) {
   # ─────────────────────────────────────────────────────────────────
   # MODULE INITIALIZATION
   # ─────────────────────────────────────────────────────────────────
-  params <- zen_controls_server("controls")
-  zen_plot_server("plot", params)
+  params <- controls_server("controls")
+  plot_server("plot", params)
 
   # ─────────────────────────────────────────────────────────────────
   # SESSION LIFECYCLE
@@ -131,5 +133,5 @@ zen_server <- function(input, output, session) {
 #' @return A Shiny app object
 #' @export
 spiralizer_app <- function() {
-  shinyApp(ui = zen_ui(), server = zen_server)
+  shinyApp(ui = app_ui(), server = app_server)
 }

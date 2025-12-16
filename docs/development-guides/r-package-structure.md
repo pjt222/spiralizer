@@ -53,7 +53,7 @@ Collate:
     'theme.R'
     'ui_controls.R'
     'ui_plot.R'
-    'app_zen.R'
+    'app.R'
     'run_app.R'
     'zzz.R'            # Always last
 ```
@@ -208,6 +208,63 @@ Declare in DESCRIPTION:
 ```yaml
 Depends:
     R (>= 4.1.0)
+```
+
+## Refactoring and Renaming
+
+### Roxygen2 NAMESPACE Corruption
+
+Roxygen2 can corrupt the NAMESPACE file when parsing malformed roxygen comments. Common symptoms:
+
+```r
+# Corrupted NAMESPACE with bogus imports
+import("5")
+import("full-viewport")
+import(Creates)
+import(the)
+```
+
+**Root cause**: Description text being parsed as `@import` directives.
+
+**Solution**: Maintain NAMESPACE manually when roxygen2 fails:
+
+```r
+# Keep a clean backup of NAMESPACE
+# After roxygen2::roxygenise(), verify NAMESPACE integrity
+# If corrupted, restore from backup or rewrite manually
+```
+
+### Systematic Renaming Strategy
+
+When removing prefixes or renaming across a codebase:
+
+1. **Plan first**: Document all renames in a mapping table
+2. **Order matters**: Rename in dependency order (utilities → modules → app)
+3. **Use replace_all**: For consistent renames across files
+4. **Update references**: Don't forget workflows, scripts, and documentation
+5. **Verify build**: Run R CMD check after each major phase
+
+### What to Keep vs Remove
+
+When simplifying naming (e.g., removing "zen_" prefix):
+
+| Keep | Remove |
+|------|--------|
+| Internal CSS variables (`--zen-black`) | Function prefixes (`zen_ui` → `app_ui`) |
+| Palette keys for backward compatibility (`"zen_mono"`) | File prefixes (`app_zen.R` → `app.R`) |
+| Display names users see ("Zen Mono") | Documentation references |
+
+### Avoiding Duplicate Documentation
+
+Don't maintain duplicate docs in multiple locations:
+
+```
+# BAD - duplicates get out of sync
+docs/ARCHITECTURE.md
+inst/docs/ARCHITECTURE.md  # Will drift from docs/
+
+# GOOD - single source of truth
+docs/ARCHITECTURE.md       # Only location
 ```
 
 ## Summary Checklist

@@ -183,7 +183,7 @@ observeEvent(input$reload_config, {
 Pass config values to UI at startup:
 
 ```r
-zen_ui <- function() {
+app_ui <- function() {
   page_navbar(
     sliderInput("density", "Points",
       min = SLIDER_DENSITY_MIN,

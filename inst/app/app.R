@@ -24,16 +24,17 @@ if (requireNamespace("spiralizer", quietly = TRUE) &&
   library(config)
   library(here)
 
-  # Source all R files in dependency order
+  # Source all R files in dependency order (flat R/ directory)
+  source(here::here("R/aaa-utils.R"))
   source(here::here("R/theme.R"))
-  source(here::here("R/utils/constants.R"))
-  source(here::here("R/utils/cache_manager.R"))
-  source(here::here("R/utils/color_utils.R"))
-  source(here::here("R/utils/spiral_math.R"))
-  source(here::here("R/utils/performance.R"))
-  source(here::here("R/modules/ui_controls.R"))
-  source(here::here("R/modules/ui_plot.R"))
-  source(here::here("R/app_zen.R"))
+  source(here::here("R/constants.R"))
+  source(here::here("R/cache_manager.R"))
+  source(here::here("R/color_utils.R"))
+  source(here::here("R/spiral_math.R"))
+  source(here::here("R/performance.R"))
+  source(here::here("R/ui_controls.R"))
+  source(here::here("R/ui_plot.R"))
+  source(here::here("R/app.R"))
 
   # Run the app
   spiralizer_app()

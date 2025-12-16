@@ -6,18 +6,18 @@ export(spiralizer_app)
 export(get_app_dir)
 
 # Exports - UI/Server
-export(zen_ui)
-export(zen_server)
-export(zen_controls_ui)
-export(zen_controls_server)
-export(zen_plot_ui)
-export(zen_plot_server)
+export(app_ui)
+export(app_server)
+export(controls_ui)
+export(controls_server)
+export(plot_ui)
+export(plot_server)
 
 # Exports - Theme
 export(spiralizer_theme)
 export(get_spiralizer_theme)
 export(preview_theme)
-export(zen_colors)
+export(theme_colors)
 export(palette_choices)
 
 # Exports - Constants

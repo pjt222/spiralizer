@@ -1,4 +1,4 @@
-# ui_plot.R - Zen Plot Output Module
+# ui_plot.R - Plot Output Module
 #
 # Handles the spiral visualization rendering and export functionality.
 # The plot fills the available viewport space.
@@ -11,7 +11,7 @@
 # UI MODULE
 # ═══════════════════════════════════════════════════════════════════════
 
-#' Zen Plot UI
+#' Plot UI
 #'
 #' Creates the plot output container that fills available space.
 #' Includes loading overlay for visual feedback during computation.
@@ -19,7 +19,7 @@
 #' @param id Module namespace ID
 #' @return Shiny tagList
 #' @export
-zen_plot_ui <- function(id) {
+plot_ui <- function(id) {
   ns <- NS(id)
 
   div(
@@ -54,7 +54,7 @@ zen_plot_ui <- function(id) {
 # SERVER MODULE
 # ═══════════════════════════════════════════════════════════════════════
 
-#' Zen Plot Server
+#' Plot Server
 #'
 #' Handles spiral computation, caching, rendering, and export.
 #' Returns computation statistics for performance monitoring.
@@ -63,7 +63,7 @@ zen_plot_ui <- function(id) {
 #' @param params Reactive values from controls module
 #' @return Reactive with computation statistics
 #' @export
-zen_plot_server <- function(id, params) {
+plot_server <- function(id, params) {
   moduleServer(id, function(input, output, session) {
 
     # ─────────────────────────────────────────────────────────────────
@@ -230,7 +230,7 @@ zen_plot_server <- function(id, params) {
       # Set up plot parameters - zen black background
       par(
         mar = c(0, 0, 0, 0),
-        bg = zen_colors$black,
+        bg = theme_colors$black,
         xaxs = "i",
         yaxs = "i"
       )
@@ -263,15 +263,15 @@ zen_plot_server <- function(id, params) {
             data$voronoi,
             colors = colors,
             alpha = 0.8,
-            border = zen_colors$gray_mid,
+            border = theme_colors$gray_mid,
             lwd = 0.5
           )
         )
       }, error = function(e) {
-        text(0, 0, "Error rendering", col = zen_colors$error, cex = 1.5)
+        text(0, 0, "Error rendering", col = theme_colors$error, cex = 1.5)
       })
 
-    }, bg = zen_colors$black, execOnResize = TRUE)
+    }, bg = theme_colors$black, execOnResize = TRUE)
 
     # ─────────────────────────────────────────────────────────────────
     # EXPORT HANDLERS
@@ -291,7 +291,7 @@ zen_plot_server <- function(id, params) {
 
     # Helper function to render plot to device
     render_plot <- function(data) {
-      par(mar = c(0, 0, 0, 0), bg = zen_colors$black)
+      par(mar = c(0, 0, 0, 0), bg = theme_colors$black)
 
       plot_limits <- calculate_plot_limits(data$voronoi)
       plot(NULL, xlim = plot_limits, ylim = plot_limits,
@@ -309,7 +309,7 @@ zen_plot_server <- function(id, params) {
           data$voronoi,
           colors = colors,
           alpha = 0.8,
-          border = zen_colors$gray_mid,
+          border = theme_colors$gray_mid,
           lwd = 1
         )
       )
@@ -326,7 +326,7 @@ zen_plot_server <- function(id, params) {
             width = EXPORT_PNG_SIZE,
             height = EXPORT_PNG_SIZE,
             res = EXPORT_PNG_RES,
-            bg = zen_colors$black)
+            bg = theme_colors$black)
         render_plot(data)
         dev.off()
       }
@@ -342,7 +342,7 @@ zen_plot_server <- function(id, params) {
         svg(file,
             width = EXPORT_SVG_SIZE,
             height = EXPORT_SVG_SIZE,
-            bg = zen_colors$black)
+            bg = theme_colors$black)
         render_plot(data)
         dev.off()
       }

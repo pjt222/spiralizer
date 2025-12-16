@@ -28,7 +28,7 @@ Collate:
     'theme.R'
     'ui_controls.R'
     'ui_plot.R'
-    'app_zen.R'
+    'app.R'
     'run_app.R'
     'zzz.R'
 Imports:

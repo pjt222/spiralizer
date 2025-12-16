@@ -18,7 +18,7 @@ spiralizer_theme <- bs_theme(
 preset = "darkly",
 
   # ═══════════════════════════════════════════════════════════════════
-# ZEN COLOR PALETTE
+# THEME COLOR PALETTE
   # ═══════════════════════════════════════════════════════════════════
 
   # Backgrounds
@@ -107,11 +107,11 @@ preview_theme <- function() {
 # COLOR CONSTANTS (for use in R code)
 # ═══════════════════════════════════════════════════════════════════════
 
-#' Zen color palette
+#' Theme color palette
 #'
-#' Named list of zen theme colors for use in R plotting code.
+#' Named list of theme colors for use in R plotting code.
 #' @export
-zen_colors <- list(
+theme_colors <- list(
   black = "#0a0a0a",
   gray_dark = "#1a1a1a",
   gray_mid = "#2a2a2a",

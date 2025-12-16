@@ -201,8 +201,8 @@ spiralizer/
 ```r
 # Ensure www folder structure is correct
 # Files in www/ are automatically served
-# Reference as: href = "css/zen-theme.css"
-# Not: href = "www/css/zen-theme.css"
+# Reference as: href = "css/theme.css"
+# Not: href = "www/css/theme.css"
 ```
 
 ## 🛠️ Debugging Commands
@@ -337,7 +337,7 @@ memory.size()
 ### Ready to Run Commands:
 ```r
 # From RStudio (recommended):
-source("R/app_zen.R")
+source("R/app.R")
 
 # Check all is well:
 renv::status()  # Should show "No issues found"

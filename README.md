@@ -37,7 +37,7 @@ source(".Rprofile")
 renv::restore()
 
 # Run the app
-source("R/app_zen.R")
+source("R/app.R")
 ```
 
 ## How It Works
@@ -58,12 +58,13 @@ source("R/app_zen.R")
 
 ```
 spiralizer/
-├── R/
-│   ├── app_zen.R           # Main application
+├── R/                      # All R code (flat structure)
+│   ├── app.R               # Main application
 │   ├── theme.R             # bslib theme
-│   ├── modules/            # Shiny modules
-│   └── utils/              # Spiral math, performance
-├── www/css/                # Minimal CSS overlay
+│   ├── ui_controls.R       # Control panel module
+│   ├── ui_plot.R           # Plot rendering module
+│   └── spiral_math.R       # Mathematical functions
+├── inst/app/               # Deployment entry point
 ├── docs/                   # Documentation
 └── tests/                  # Test suite
 ```

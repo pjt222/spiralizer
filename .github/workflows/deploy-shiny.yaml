@@ -55,7 +55,7 @@ jobs:
             )
             rsconnect::deployApp(
               appDir = '.',
-              appPrimaryDoc = 'R/app_zen.R',
+              appPrimaryDoc = 'R/app.R',
               appName = 'spiralizer',
               forceUpdate = TRUE
             )

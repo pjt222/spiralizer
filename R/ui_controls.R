@@ -1,4 +1,4 @@
-# ui_controls.R - Zen Control Panel Module
+# ui_controls.R - Control Panel Module
 #
 # Provides spiral parameter controls using bslib cards.
 # Minimal, focused interface with all essential controls visible.
@@ -10,7 +10,7 @@
 # UI MODULE
 # ═══════════════════════════════════════════════════════════════════════
 
-#' Zen Control Panel UI
+#' Control Panel UI
 #'
 #' Creates the control panel interface with sliders, palette selector,
 #' presets, and export options organized in bslib cards.
@@ -18,7 +18,7 @@
 #' @param id Module namespace ID
 #' @return Shiny tagList
 #' @export
-zen_controls_ui <- function(id) {
+controls_ui <- function(id) {
   ns <- NS(id)
 
   tagList(
@@ -104,7 +104,7 @@ zen_controls_ui <- function(id) {
 # SERVER MODULE
 # ═══════════════════════════════════════════════════════════════════════
 
-#' Zen Control Panel Server
+#' Control Panel Server
 #'
 #' Handles control panel logic including parameter updates,
 #' preset application, and debounced input processing.
@@ -112,7 +112,7 @@ zen_controls_ui <- function(id) {
 #' @param id Module namespace ID
 #' @return Reactive values with current parameters
 #' @export
-zen_controls_server <- function(id) {
+controls_server <- function(id) {
   moduleServer(id, function(input, output, session) {
 
     # Reactive values for parameters

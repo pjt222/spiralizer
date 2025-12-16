@@ -20,7 +20,7 @@ get_color_palette <- function(palette_name, n_colors, invert = FALSE) {
     "inferno"  = viridisLite::inferno(n_colors),
     "magma"    = viridisLite::magma(n_colors),
     "cividis"  = viridisLite::cividis(n_colors),
-    "zen_mono" = colorRampPalette(c(zen_colors$black, zen_colors$accent))(n_colors),
+    "zen_mono" = colorRampPalette(c(theme_colors$black, theme_colors$accent))(n_colors),
     viridisLite::turbo(n_colors)  # default fallback
 
   )

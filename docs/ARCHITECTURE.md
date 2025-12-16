@@ -22,7 +22,7 @@ Spiralizer is a modular R Shiny application for creating interactive Voronoi dia
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                      APPLICATION CORE                           │
-│                       (app_zen.R)                               │
+│                       (app.R)                               │
 │                                                                 │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
 │  │   theme.R    │  │ Module Init  │  │  Observers   │          │
@@ -103,7 +103,7 @@ Update Performance Indicator
 **Returns**: Reactive values object with current parameters
 
 ```r
-zen_controls_server(id) → reactiveValues(
+controls_server(id) → reactiveValues(
   angle_start,
   angle_end,
   point_density,
@@ -124,7 +124,7 @@ zen_controls_server(id) → reactiveValues(
 - Computation statistics reactive
 
 ```r
-zen_plot_server(id, params) → reactive(
+plot_server(id, params) → reactive(
   computation_time,
   point_count,
   cell_count
@@ -157,7 +157,7 @@ zen_plot_server(id, params) → reactive(
 ## File Dependencies
 
 ```
-app_zen.R
+app.R
 ├── sources: R/theme.R
 ├── sources: R/utils/spiral_math.R
 ├── sources: R/utils/performance.R

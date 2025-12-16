@@ -18,7 +18,7 @@ source(".Rprofile")
 renv::restore()
 
 # Run the Zen app
-source("R/app_zen.R")
+source("R/app.R")
 ```
 
 The app will launch at `http://127.0.0.1:XXXX`.
@@ -28,7 +28,7 @@ The app will launch at `http://127.0.0.1:XXXX`.
 ```
 spiralizer/
 ├── R/
-│   ├── app_zen.R              # Main application entry point
+│   ├── app.R              # Main application entry point
 │   ├── theme.R                # bslib theme configuration
 │   ├── modules/
 │   │   ├── ui_controls.R      # Control panel module
@@ -39,9 +39,9 @@ spiralizer/
 │       └── performance.R      # Performance monitoring
 ├── www/
 │   ├── css/
-│   │   └── zen-overlay.css    # Custom zen effects
+│   │   └── overlay.css    # Custom zen effects
 │   └── js/
-│       └── zen-interactions.js # Client-side interactions
+│       └── interactions.js # Client-side interactions
 ├── tests/
 │   ├── testthat/
 │   │   └── test_spiral_math.R # Unit tests
@@ -103,7 +103,7 @@ bs_theme_preview(spiralizer_theme)
 
 ## Key Files to Know
 
-### `R/app_zen.R`
+### `R/app.R`
 Main application file. Contains:
 - UI definition with bslib layout
 - Server function with module initialization
@@ -117,13 +117,13 @@ Centralized bslib theme. Modify here to change:
 
 ### `R/modules/ui_controls.R`
 Control panel module. Key functions:
-- `zen_controls_ui(id)` - UI definition
-- `zen_controls_server(id)` - Server logic, returns reactive params
+- `controls_ui(id)` - UI definition
+- `controls_server(id)` - Server logic, returns reactive params
 
 ### `R/modules/ui_plot.R`
 Plot module. Key functions:
-- `zen_plot_ui(id)` - Plot container
-- `zen_plot_server(id, params)` - Rendering and export
+- `plot_ui(id)` - Plot container
+- `plot_server(id, params)` - Rendering and export
 
 ### `R/utils/spiral_math.R`
 Core mathematical functions:
@@ -191,7 +191,7 @@ spiralizer_theme <- bs_theme(
 
 ### Adding Custom CSS
 
-Add to `www/css/zen-overlay.css`:
+Add to `www/css/overlay.css`:
 
 ```css
 /* Your custom styles */
@@ -231,7 +231,7 @@ get_cache_stats()
 
 # Profile performance
 profvis::profvis({
-  source("R/app_zen.R")
+  source("R/app.R")
 })
 
 # Check reactive dependencies
@@ -255,7 +255,7 @@ reactlog::reactlog_enable()
 
 ## Deployment
 
-See `deploy_zen.R` for deployment to shinyapps.io:
+See `deploy.R` for deployment to shinyapps.io:
 
 ```r
 # Configure credentials first
@@ -266,7 +266,7 @@ rsconnect::setAccountInfo(
 )
 
 # Deploy
-source("deploy_zen.R")
+source("deploy.R")
 ```
 
 ## Getting Help

@@ -36,10 +36,10 @@ spiralizer/
 │   ├── spiral_math.R        # Fermat spiral + Voronoi computation
 │   ├── cache_manager.R      # Memoized Voronoi computation (lazy init)
 │   ├── performance.R        # Performance mode detection
-│   ├── theme.R              # bslib theme + zen_colors + palette_choices
+│   ├── theme.R              # bslib theme + theme_colors + palette_choices
 │   ├── ui_controls.R        # Control panel module
 │   ├── ui_plot.R            # Plot output module
-│   ├── app_zen.R            # Main app UI/server + spiralizer_app()
+│   ├── app.R                # Main app UI/server + spiralizer_app()
 │   ├── run_app.R            # run_spiralizer() launcher function
 │   └── zzz.R                # Loaded last: package hooks
 │
@@ -54,8 +54,8 @@ spiralizer/
 │   │   └── app_legacy_semantic.R
 │   ├── docs/                # Documentation (installed with package)
 │   └── scripts/             # Utility scripts
-│       ├── deploy_zen.R
-│       └── run_zen.R
+│       ├── deploy.R
+│       └── run.R
 │
 ├── src/                     # C++ source (Rcpp)
 │   ├── spiral_rcpp.cpp      # C++ implementations
@@ -107,10 +107,10 @@ page_navbar
 └── nav_panel (main)
     └── layout_sidebar
         ├── sidebar (collapsible, 320px)
-        │   └── zen_controls_ui
+        │   └── controls_ui
         │       ├── card: Spiral Shape (Start, End, Density sliders)
         │       └── card: Color (palette dropdown + invert switch)
-        └── zen_plot_ui
+        └── plot_ui
             ├── plotOutput (fills viewport)
             └── export buttons (PNG, SVG)
 ```
@@ -180,7 +180,7 @@ The R code auto-detects if Rcpp functions are available and uses them.
 ### App Functions
 - `run_spiralizer()` - Launch the Shiny app
 - `spiralizer_app()` - Get app object
-- `zen_ui()`, `zen_server()` - UI and server components
+- `app_ui()`, `app_server()` - UI and server components
 
 ### Spiral Math
 - `generate_fermat_spiral()` - Generate spiral points
@@ -189,7 +189,7 @@ The R code auto-detects if Rcpp functions are available and uses them.
 
 ### Theme
 - `spiralizer_theme` - bslib theme object
-- `zen_colors` - Color palette list
+- `theme_colors` - Color palette list
 - `palette_choices` - Available color palettes
 
 ## Fermat Spiral Formula
