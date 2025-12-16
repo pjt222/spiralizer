@@ -42,6 +42,7 @@ controls_ui <- function(id) {
           max = SLIDER_ANGLE_MAX,
           value = SLIDER_ANGLE_MIN,
           step = 1,
+          ticks = FALSE,
           width = "100%",
           animate = animationOptions(interval = 2000, loop = TRUE)
         ),
@@ -54,6 +55,7 @@ controls_ui <- function(id) {
           max = SLIDER_ANGLE_MAX,
           value = 100,
           step = 1,
+          ticks = FALSE,
           width = "100%",
           animate = animationOptions(interval = 2000, loop = TRUE)
         )
@@ -80,6 +82,7 @@ controls_ui <- function(id) {
           max = SLIDER_DENSITY_MAX,
           value = SPIRAL_DEFAULT_POINTS,
           step = 50,
+          ticks = FALSE,
           width = "100%",
           animate = animationOptions(interval = 2000, loop = TRUE)
         )
