@@ -61,7 +61,7 @@ controls_ui <- function(id) {
         # Point Density
         sliderInput(
           ns("point_density"),
-          label = "Density",
+          label = "Points",
           min = SLIDER_DENSITY_MIN,
           max = SLIDER_DENSITY_MAX,
           value = SPIRAL_DEFAULT_POINTS,

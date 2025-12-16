@@ -2,7 +2,7 @@ default:
   # Spiral generation limits
   spiral:
     max_points: 5000
-    min_points: 3
+    min_points: 10
     max_angle_range: 1000
     default_points: 300
 
@@ -10,7 +10,7 @@ default:
   sliders:
     angle_min: 0
     angle_max: 1000
-    density_min: 3
+    density_min: 10
     density_max: 2000
 
   # Reactive settings
@@ -41,14 +41,14 @@ default:
 development:
   spiral:
     max_points: 2000
-    min_points: 3
+    min_points: 10
     max_angle_range: 500
     default_points: 200
 
   sliders:
     angle_min: 0
     angle_max: 500
-    density_min: 3
+    density_min: 10
     density_max: 1000
 
   reactive:
@@ -74,14 +74,14 @@ development:
 production:
   spiral:
     max_points: 5000
-    min_points: 3
+    min_points: 10
     max_angle_range: 1000
     default_points: 300
 
   sliders:
     angle_min: 0
     angle_max: 1000
-    density_min: 3
+    density_min: 10
     density_max: 2000
 
   reactive:
