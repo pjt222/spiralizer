@@ -53,7 +53,7 @@ SPIRAL_MAX_POINTS <- .spiralizer_config$spiral$max_points %||% 5000L
 
 #' Minimum number of points required for Voronoi diagram
 #' @export
-SPIRAL_MIN_POINTS <- .spiralizer_config$spiral$min_points %||% 10L
+SPIRAL_MIN_POINTS <- .spiralizer_config$spiral$min_points %||% 50L
 
 #' Maximum angle range allowed
 #' @export
@@ -77,7 +77,7 @@ SLIDER_ANGLE_MAX <- .spiralizer_config$sliders$angle_max %||% 1000L
 
 #' Slider minimum for density
 #' @export
-SLIDER_DENSITY_MIN <- .spiralizer_config$sliders$density_min %||% 10L
+SLIDER_DENSITY_MIN <- .spiralizer_config$sliders$density_min %||% 50L
 
 #' Slider maximum for density
 #' @export

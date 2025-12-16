@@ -72,14 +72,14 @@ controls_ui <- function(id) {
       card_body(
         class = "pt-0",
 
-        # Point count (min 10 required for Voronoi/Delaunay computation)
+        # Point count (min 50, step 50 for better UX)
         sliderInput(
           ns("point_density"),
           label = NULL,
           min = SLIDER_DENSITY_MIN,
           max = SLIDER_DENSITY_MAX,
           value = SPIRAL_DEFAULT_POINTS,
-          step = 1,
+          step = 50,
           width = "100%",
           animate = animationOptions(interval = 2000, loop = TRUE)
         )
