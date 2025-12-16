@@ -267,6 +267,44 @@ inst/docs/ARCHITECTURE.md  # Will drift from docs/
 docs/ARCHITECTURE.md       # Only location
 ```
 
+## Computational Geometry Constraints
+
+### Delaunay/Voronoi Minimum Points
+
+The `tessellation` package uses qhull for Delaunay triangulation and Voronoi diagrams. qhull has strict minimum requirements:
+
+```
+QH6214 qhull input error: not enough points(3) to construct initial simplex (need 4)
+```
+
+**Minimum requirements:**
+- qhull needs **≥4 non-collinear points** for 2D Delaunay triangulation
+- For safety margin, use **≥10 points** as minimum
+
+**Why 10 instead of 4?**
+1. With very small angle ranges, points can be nearly collinear
+2. Low point counts don't produce interesting visualizations
+3. Provides buffer against edge cases
+
+### Configuration
+
+Set minimums in `config.yml`:
+
+```yaml
+spiral:
+  min_points: 10      # Minimum for computation
+
+sliders:
+  density_min: 10     # UI slider minimum
+```
+
+And fallbacks in `constants.R`:
+
+```r
+SPIRAL_MIN_POINTS <- config$spiral$min_points %||% 10L
+SLIDER_DENSITY_MIN <- config$sliders$density_min %||% 10L
+```
+
 ## Summary Checklist
 
 - [ ] All R files in flat `R/` directory

@@ -23,13 +23,13 @@ controls_ui <- function(id) {
 
   tagList(
     # ─────────────────────────────────────────────────────────────────
-    # SPIRAL SHAPE CARD
+    # ANGLE CARD
     # ─────────────────────────────────────────────────────────────────
     card(
       class = "mb-3",
       card_header(
         class = "py-2 border-0",
-        span("Spiral Shape", class = "small text-uppercase text-muted")
+        span("Angle", class = "small text-uppercase text-muted")
       ),
       card_body(
         class = "pt-0",
@@ -56,12 +56,26 @@ controls_ui <- function(id) {
           step = 1,
           width = "100%",
           animate = animationOptions(interval = 2000, loop = TRUE)
-        ),
+        )
+      )
+    ),
 
-        # Point Density
+    # ─────────────────────────────────────────────────────────────────
+    # POINTS CARD
+    # ─────────────────────────────────────────────────────────────────
+    card(
+      class = "mb-3",
+      card_header(
+        class = "py-2 border-0",
+        span("Points", class = "small text-uppercase text-muted")
+      ),
+      card_body(
+        class = "pt-0",
+
+        # Point count (min 10 required for Voronoi/Delaunay computation)
         sliderInput(
           ns("point_density"),
-          label = "Points",
+          label = NULL,
           min = SLIDER_DENSITY_MIN,
           max = SLIDER_DENSITY_MAX,
           value = SPIRAL_DEFAULT_POINTS,

@@ -116,6 +116,26 @@ source("R/utils/cache_manager.R")    # Then cache manager
 warm_cache()                         # Finally warm cache
 ```
 
+#### Problem: "qhull input error: not enough points to construct initial simplex"
+**Error:**
+```
+QH6214 qhull input error: not enough points(3) to construct initial simplex (need 4)
+```
+
+**Root Cause:** The tessellation package uses qhull for Delaunay/Voronoi computation. qhull requires at least 4 non-collinear points for 2D triangulation.
+
+**Solution:**
+```r
+# Ensure minimum point count is at least 10 (provides safety margin)
+# In config.yml:
+spiral:
+  min_points: 10
+sliders:
+  density_min: 10
+
+# The UI slider minimum prevents users from selecting < 10 points
+```
+
 ### 4. Shiny App Issues
 
 #### Problem: App won't start locally
