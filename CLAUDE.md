@@ -271,6 +271,40 @@ sync_slider_numeric <- function(slider_id, numeric_id) {
 - Use `ignoreInit = TRUE` to prevent race conditions on startup
 - Compare values before updating to avoid infinite loops
 
+### Dynamic UI with renderUI vs conditionalPanel
+For showing/hiding UI elements based on input in Shiny modules, prefer `renderUI` over `conditionalPanel`:
+
+```r
+# In UI: placeholder for dynamic content
+uiOutput(ns("dynamic_ui"))
+
+# In server: render conditionally
+output$dynamic_ui <- renderUI({
+
+  req(isTRUE(input$enable_feature))
+  slider_with_numeric(
+    ns = session$ns,  # Important: use session$ns for dynamic UI
+    id = "feature_value",
+    ...
+  )
+})
+```
+
+**Why `renderUI` over `conditionalPanel`:**
+- `conditionalPanel` uses JavaScript conditions that can fail with bslib components
+- `renderUI` is server-side and works reliably with all input types
+- Use `session$ns` (not `ns`) when creating namespaced inputs in `renderUI`
+
+### Truncation Feature
+Removes outlier points based on median radius:
+- `max_radius = factor × median_radius`
+- **factor=1.0**: Keeps ~50% of points (aggressive)
+- **factor=2.0**: Default, removes only far outliers
+- **factor≤0**: Invalid (throws error)
+
+The truncation is applied after spiral generation, before Voronoi computation.
+Cache keys include truncation parameters to avoid stale results.
+
 ## Code Style
 - Descriptive variable names
 - roxygen2-style documentation comments

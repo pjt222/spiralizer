@@ -27,7 +27,7 @@ generate_fermat_spiral <- function(angle_start = 0, angle_end = 100, num_points 
     is.numeric(angle_end),
     is.numeric(num_points),
     angle_end > angle_start,
-    num_points >= SPIRAL_MIN_POINTS
+    num_points >= get_setting("spiral", "min_points")
   )
 
   # Use Rcpp if available, otherwise fall back to R
@@ -73,17 +73,17 @@ calculate_plot_limits <- function(voronoi_object) {
   all_vertices <- extract_voronoi_vertices(voronoi_object)
 
   if (is.null(all_vertices) || nrow(all_vertices) == 0) {
-    return(DEFAULT_PLOT_LIMITS)
+    return(get_setting("plot", "default_limits"))
   }
 
   # Use Rcpp if available
   if (.rcpp_available() && exists("calculate_limits_cpp", mode = "function")) {
-    return(calculate_limits_cpp(all_vertices, PLOT_LIMIT_PADDING))
+    return(calculate_limits_cpp(all_vertices, get_setting("plot", "limit_padding")))
   }
 
   # R implementation
   max_coord <- max(abs(all_vertices))
-  limit <- ceiling(max_coord * PLOT_LIMIT_PADDING)
+  limit <- ceiling(max_coord * get_setting("plot", "limit_padding"))
 
   c(-limit, limit)
 }
@@ -130,6 +130,43 @@ extract_voronoi_vertices <- function(voronoi_object) {
   do.call(rbind, vertex_list)
 }
 
+#' Truncate Spiral Points by Radius
+#'
+#' Removes outlier points that exceed a threshold based on median radius.
+#' Useful for cleaning up spirals where some points extend far from center.
+#'
+#' @param spiral_points Matrix with x,y coordinates
+#' @param factor Truncation factor: points with radius > factor * median_radius are removed
+#' @return Matrix with truncated x,y coordinates
+#' @export
+truncate_spiral_points <- function(spiral_points, factor = 2.0) {
+
+  if (factor <= 0) {
+    stop("Truncation factor must be positive")
+  }
+
+  # Calculate radius for each point
+  radii <- sqrt(spiral_points[, "x"]^2 + spiral_points[, "y"]^2)
+
+  # Calculate threshold based on median radius
+  median_radius <- median(radii)
+  max_radius <- factor * median_radius
+
+  # Filter points within threshold
+  keep_mask <- radii <= max_radius
+  truncated <- spiral_points[keep_mask, , drop = FALSE]
+
+  # Ensure we keep at least min_points
+  min_points <- get_setting("spiral", "min_points")
+  if (nrow(truncated) < min_points) {
+    # Keep the closest min_points if too many were removed
+    order_by_radius <- order(radii)
+    truncated <- spiral_points[order_by_radius[1:min_points], , drop = FALSE]
+  }
+
+  truncated
+}
+
 #' Compute Voronoi Diagram
 #'
 #' @param spiral_points Matrix with x,y coordinates
@@ -156,28 +193,32 @@ compute_voronoi <- function(spiral_points) {
 #' @return List with valid flag and message
 #' @export
 validate_spiral_params <- function(angle_start, angle_end, num_points) {
+  min_points <- get_setting("spiral", "min_points")
+  max_points <- get_setting("spiral", "max_points")
+  max_angle_range <- get_setting("spiral", "max_angle_range")
+
   if (angle_start >= angle_end) {
     return(list(valid = FALSE, message = "Start angle must be less than end angle"))
   }
 
-  if (num_points < SPIRAL_MIN_POINTS) {
+  if (num_points < min_points) {
     return(list(
       valid = FALSE,
-      message = sprintf("Need at least %d points for Voronoi diagram", SPIRAL_MIN_POINTS)
+      message = sprintf("Need at least %d points for Voronoi diagram", min_points)
     ))
   }
 
-  if (num_points > SPIRAL_MAX_POINTS) {
+  if (num_points > max_points) {
     return(list(
       valid = FALSE,
-      message = sprintf("Too many points! Maximum is %d for performance", SPIRAL_MAX_POINTS)
+      message = sprintf("Too many points! Maximum is %d for performance", max_points)
     ))
   }
 
-  if (angle_end - angle_start > SPIRAL_MAX_ANGLE_RANGE) {
+  if (angle_end - angle_start > max_angle_range) {
     return(list(
       valid = FALSE,
-      message = sprintf("Angle range too large! Keep it under %d", SPIRAL_MAX_ANGLE_RANGE)
+      message = sprintf("Angle range too large! Keep it under %d", max_angle_range)
     ))
   }
 
@@ -185,14 +226,13 @@ validate_spiral_params <- function(angle_start, angle_end, num_points) {
 }
 
 #' Estimate Computation Time
-#' 
+#'
 #' @param num_points Number of points
 #' @return Estimated time in milliseconds
 #' @export
 estimate_computation_time <- function(num_points) {
-  # Based on empirical benchmarks
-  base_time <- 50  # Base overhead in ms
-  per_point_time <- 0.3  # Time per point in ms
-  
-  return(base_time + (num_points * per_point_time))
+  # Based on empirical benchmarks, values from config
+  base_time <- get_setting("estimation", "base_time_ms")
+  per_point <- get_setting("estimation", "per_point_time_ms")
+  return(base_time + (num_points * per_point))
 }

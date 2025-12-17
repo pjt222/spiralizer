@@ -155,8 +155,17 @@ plot_server <- function(id, params) {
         return(NULL)
       }
 
-      # Create cache key from parameters
-      cache_key <- paste(params$angle_start, params$angle_end, params$point_density, sep = "_")
+      # Get truncation settings
+      truncate_enabled <- isTRUE(params$truncate_enabled)
+      truncate_factor <- params$truncate_factor %||% get_setting("truncation", "factor_default")
+
+      # Create cache key from parameters (include truncation settings)
+      cache_key <- if (truncate_enabled) {
+        paste(params$angle_start, params$angle_end, params$point_density,
+              "trunc", truncate_factor, sep = "_")
+      } else {
+        paste(params$angle_start, params$angle_end, params$point_density, sep = "_")
+      }
 
       # Check session cache first (includes pre-loaded RDS)
       cache <- session_cache()
@@ -189,6 +198,11 @@ plot_server <- function(id, params) {
           params$angle_end,
           params$point_density
         )
+
+        # Apply truncation if enabled
+        if (truncate_enabled) {
+          points <- truncate_spiral_points(points, factor = truncate_factor)
+        }
 
         # Compute Voronoi
         voronoi_result <- compute_voronoi(points)
@@ -323,9 +337,9 @@ plot_server <- function(id, params) {
         req(data)
 
         png(file,
-            width = EXPORT_PNG_SIZE,
-            height = EXPORT_PNG_SIZE,
-            res = EXPORT_PNG_RES,
+            width = get_setting("export", "png_size"),
+            height = get_setting("export", "png_size"),
+            res = get_setting("export", "png_resolution"),
             bg = theme_colors$black)
         render_plot(data)
         dev.off()
@@ -340,8 +354,8 @@ plot_server <- function(id, params) {
         req(data)
 
         svg(file,
-            width = EXPORT_SVG_SIZE,
-            height = EXPORT_SVG_SIZE,
+            width = get_setting("export", "svg_size"),
+            height = get_setting("export", "svg_size"),
             bg = theme_colors$black)
         render_plot(data)
         dev.off()

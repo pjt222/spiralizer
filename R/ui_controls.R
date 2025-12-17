@@ -175,6 +175,30 @@ controls_ui <- function(id) {
           value = FALSE
         )
       )
+    ),
+
+    # ─────────────────────────────────────────────────────────────────
+    # OPTIONS CARD
+    # ─────────────────────────────────────────────────────────────────
+    card(
+      class = "mb-3",
+      card_header(
+        class = "py-2 border-0",
+        span("Options", class = "small text-uppercase text-muted")
+      ),
+      card_body(
+        class = "pt-0",
+
+        # Truncation switch
+        input_switch(
+          ns("truncate_enabled"),
+          label = "Truncate outliers",
+          value = get_setting("truncation", "enabled")
+        ),
+
+        # Truncation factor (rendered from server when enabled)
+        uiOutput(ns("truncate_factor_ui"))
+      )
     )
   )
 }
@@ -201,7 +225,9 @@ controls_server <- function(id) {
       angle_end = get_setting("ui", "default_angle_end"),
       point_density = get_setting("spiral", "default_points"),
       color_palette = get_setting("palette", "default"),
-      invert_palette = FALSE
+      invert_palette = FALSE,
+      truncate_enabled = get_setting("truncation", "enabled"),
+      truncate_factor = get_setting("truncation", "factor_default")
     )
 
     # ─────────────────────────────────────────────────────────────────
@@ -234,6 +260,7 @@ controls_server <- function(id) {
     sync_slider_numeric("angle_start", "angle_start_num")
     sync_slider_numeric("angle_end", "angle_end_num")
     sync_slider_numeric("point_density", "point_density_num")
+    # Note: truncate_factor sync is set up dynamically when the UI renders
 
     # ─────────────────────────────────────────────────────────────────
     # DEBOUNCED PARAMETER UPDATES
@@ -270,6 +297,45 @@ controls_server <- function(id) {
     # Invert palette switch
     observe({
       params$invert_palette <- isTRUE(input$invert_palette)
+    })
+
+    # ─────────────────────────────────────────────────────────────────
+    # TRUNCATION PARAMETER UPDATES
+    # ─────────────────────────────────────────────────────────────────
+
+    # Truncation enabled switch (immediate update)
+    observe({
+      params$truncate_enabled <- isTRUE(input$truncate_enabled)
+    })
+
+    # Render truncation factor UI only when enabled
+    output$truncate_factor_ui <- renderUI({
+      req(isTRUE(input$truncate_enabled))
+      slider_with_numeric(
+        ns = session$ns,
+        id = "truncate_factor",
+        label = "Factor",
+        min = get_setting("truncation", "factor_min"),
+        max = get_setting("truncation", "factor_max"),
+        value = isolate(params$truncate_factor),
+        step = get_setting("truncation", "factor_step")
+      )
+    })
+
+    # Sync for truncate_factor (set up after UI renders)
+    observe({
+      req(input$truncate_enabled)
+      sync_slider_numeric("truncate_factor", "truncate_factor_num")
+    }) |> bindEvent(input$truncate_enabled, once = TRUE)
+
+    # Truncation factor (debounced since it affects computation)
+    truncate_factor_d <- reactive({ input$truncate_factor }) |> debounce(debounce_ms)
+
+    observe({
+      val <- truncate_factor_d()
+      if (!is.null(val) && !is.na(val)) {
+        params$truncate_factor <- val
+      }
     })
 
     # ─────────────────────────────────────────────────────────────────

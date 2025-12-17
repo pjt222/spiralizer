@@ -13,6 +13,13 @@ default:
     density_min: 50
     density_max: 2000
 
+  # UI layout settings
+  ui:
+    sidebar_width: 320
+    animation_interval_ms: 2000
+    slider_step_points: 50
+    default_angle_end: 100
+
   # Reactive settings
   reactive:
     debounce_ms: 300
@@ -37,6 +44,36 @@ default:
   palette:
     default: "turbo"
 
+  # Truncation settings (remove outlier points)
+  # factor = multiplier for median radius threshold
+  # factor=1.0 keeps ~half points, factor=2.0 keeps most, removes far outliers
+  truncation:
+    enabled: FALSE
+    factor_default: 2.0
+    factor_min: 1.0
+    factor_max: 5.0
+    factor_step: 0.1
+
+  # Performance estimation (for UI feedback)
+  estimation:
+    base_time_ms: 50
+    per_point_time_ms: 0.3
+
+  # Performance mode recommendations
+  performance_modes:
+    high:
+      max_points: 5000
+      debounce_ms: 200
+      cache_size_mb: 200
+    medium:
+      max_points: 2000
+      debounce_ms: 300
+      cache_size_mb: 100
+    low:
+      max_points: 1000
+      debounce_ms: 500
+      cache_size_mb: 50
+
 # Development configuration (more verbose, smaller limits for testing)
 development:
   spiral:
@@ -50,6 +87,12 @@ development:
     angle_max: 500
     density_min: 50
     density_max: 1000
+
+  ui:
+    sidebar_width: 320
+    animation_interval_ms: 2000
+    slider_step_points: 50
+    default_angle_end: 100
 
   reactive:
     debounce_ms: 200
@@ -70,6 +113,31 @@ development:
   palette:
     default: "turbo"
 
+  truncation:
+    enabled: FALSE
+    factor_default: 2.0
+    factor_min: 1.0
+    factor_max: 5.0
+    factor_step: 0.1
+
+  estimation:
+    base_time_ms: 50
+    per_point_time_ms: 0.3
+
+  performance_modes:
+    high:
+      max_points: 2000
+      debounce_ms: 150
+      cache_size_mb: 100
+    medium:
+      max_points: 1000
+      debounce_ms: 200
+      cache_size_mb: 50
+    low:
+      max_points: 500
+      debounce_ms: 300
+      cache_size_mb: 25
+
 # Production configuration (optimized for deployed app)
 production:
   spiral:
@@ -83,6 +151,12 @@ production:
     angle_max: 1000
     density_min: 50
     density_max: 2000
+
+  ui:
+    sidebar_width: 320
+    animation_interval_ms: 2000
+    slider_step_points: 50
+    default_angle_end: 100
 
   reactive:
     debounce_ms: 300
@@ -102,3 +176,28 @@ production:
 
   palette:
     default: "turbo"
+
+  truncation:
+    enabled: FALSE
+    factor_default: 2.0
+    factor_min: 1.0
+    factor_max: 5.0
+    factor_step: 0.1
+
+  estimation:
+    base_time_ms: 50
+    per_point_time_ms: 0.3
+
+  performance_modes:
+    high:
+      max_points: 5000
+      debounce_ms: 200
+      cache_size_mb: 200
+    medium:
+      max_points: 2000
+      debounce_ms: 300
+      cache_size_mb: 100
+    low:
+      max_points: 1000
+      debounce_ms: 500
+      cache_size_mb: 50
