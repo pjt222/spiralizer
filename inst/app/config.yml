@@ -46,11 +46,11 @@ default:
 
   # Truncation settings (remove outlier points)
   # factor = multiplier for median radius threshold
-  # factor=1.0 keeps ~half points, factor=2.0 keeps most, removes far outliers
+  # factor<1.0 aggressive truncation, factor=1.0 keeps ~half, factor>2.0 keeps most
   truncation:
     enabled: FALSE
     factor_default: 1.2
-    factor_min: 1.0
+    factor_min: 0.1
     factor_max: 5.0
     factor_step: 0.1
 
@@ -116,7 +116,7 @@ development:
   truncation:
     enabled: FALSE
     factor_default: 1.2
-    factor_min: 1.0
+    factor_min: 0.1
     factor_max: 5.0
     factor_step: 0.1
 
@@ -180,7 +180,7 @@ production:
   truncation:
     enabled: FALSE
     factor_default: 1.2
-    factor_min: 1.0
+    factor_min: 0.1
     factor_max: 5.0
     factor_step: 0.1
 
