@@ -82,7 +82,7 @@ controls_ui <- function(id) {
     # ANGLE CARD
     # ─────────────────────────────────────────────────────────────────
     card(
-      class = "mb-3",
+      class = "mb-2",
       card_header(
         class = "py-2 border-0",
         span("Angle", class = "small text-uppercase text-muted")
@@ -126,7 +126,7 @@ controls_ui <- function(id) {
     # POINTS CARD
     # ─────────────────────────────────────────────────────────────────
     card(
-      class = "mb-3",
+      class = "mb-2",
       card_header(
         class = "py-2 border-0",
         span("Points", class = "small text-uppercase text-muted")
@@ -155,7 +155,7 @@ controls_ui <- function(id) {
     # COLOR PALETTE CARD
     # ─────────────────────────────────────────────────────────────────
     card(
-      class = "mb-3 overflow-visible",
+      class = "mb-2 overflow-visible",
       card_header(
         class = "py-2 border-0",
         span("Color", class = "small text-uppercase text-muted")
@@ -183,7 +183,7 @@ controls_ui <- function(id) {
     # OPTIONS CARD
     # ─────────────────────────────────────────────────────────────────
     card(
-      class = "mb-3",
+      class = "mb-2",
       card_header(
         class = "py-2 border-0",
         span("Options", class = "small text-uppercase text-muted")

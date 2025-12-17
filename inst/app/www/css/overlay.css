@@ -226,23 +226,14 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* Compact color picker inputs */
-.colourpicker-input-container {
-  height: 32px;
-}
-
 .colourpicker-input-container .form-control {
   height: 32px !important;
   padding: 0.25rem 0.5rem;
-}
-
-/* Style the color preview background */
-.colourpicker-input-container .colourpicker-input {
-  background: var(--bs-body-bg) !important;
   border-color: var(--bs-secondary) !important;
   transition: var(--zen-transition-fast);
 }
 
-.colourpicker-input-container .colourpicker-input:focus {
+.colourpicker-input-container .form-control:focus {
   border-color: var(--bs-primary) !important;
   box-shadow: var(--zen-glow-subtle);
 }
