@@ -267,7 +267,9 @@ plot_server <- function(id, params) {
       colors <- get_color_palette(
         params$color_palette,
         data$bounded_count,
-        params$invert_palette
+        params$invert_palette,
+        params$custom_color_start,
+        params$custom_color_end
       )
 
       # Draw Voronoi diagram
@@ -315,7 +317,9 @@ plot_server <- function(id, params) {
       colors <- get_color_palette(
         params$color_palette,
         data$bounded_count,
-        params$invert_palette
+        params$invert_palette,
+        params$custom_color_start,
+        params$custom_color_end
       )
 
       suppressMessages(

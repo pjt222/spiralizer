@@ -53,7 +53,7 @@ app_ui <- function() {
           id = "controls_sidebar",
           title = NULL,  # Clean header
           open = "desktop",  # Collapsed on mobile, open on desktop
-          width = 320,
+          width = get_setting("ui", "sidebar_width"),
           class = "zen-sidebar",
 
           # Controls module

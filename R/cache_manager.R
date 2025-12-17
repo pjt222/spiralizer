@@ -11,8 +11,8 @@
 .get_spiral_cache <- function() {
   if (is.null(.cache_env$spiral_cache)) {
     .cache_env$spiral_cache <- cachem::cache_mem(
-      max_size = CACHE_MAX_SIZE_MB * 1024^2,
-      max_age = CACHE_MAX_AGE_SECONDS
+      max_size = get_setting("cache", "max_size_mb") * 1024^2,
+      max_age = get_setting("cache", "max_age_seconds")
     )
   }
   .cache_env$spiral_cache
@@ -65,7 +65,7 @@ clear_spiral_cache <- function() {
 #' @export
 get_cache_stats <- function() {
   cache <- .get_spiral_cache()
-  max_bytes <- CACHE_MAX_SIZE_MB * 1024^2
+  max_bytes <- get_setting("cache", "max_size_mb") * 1024^2
   list(
     size = cache$size(),
     max_size = max_bytes,

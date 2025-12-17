@@ -192,7 +192,12 @@
 .selectize-control .selectize-input {
   background: var(--bs-body-bg) !important;
   border-color: var(--bs-secondary) !important;
+  color: var(--bs-body-color) !important;
   transition: var(--zen-transition-fast);
+}
+
+.selectize-control .selectize-input .item {
+  color: var(--bs-body-color) !important;
 }
 
 .selectize-control .selectize-input.focus {
@@ -206,6 +211,7 @@
 }
 
 .selectize-dropdown .option {
+  color: var(--bs-body-color) !important;
   transition: var(--zen-transition-fast);
 }
 

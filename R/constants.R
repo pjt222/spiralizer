@@ -1,7 +1,7 @@
-# constants.R - Configuration constants for Spiralizer
+# constants.R - Configuration access for Spiralizer
 #
-# Loads configuration from config.yml using the config package.
-# Supports different configurations for default, development, and production.
+# Provides config-only access via get_setting() function.
+# All values come from config.yml with fallback defaults.
 #
 # Note: Do not use library(config) - use config::get() directly to avoid
 # namespace conflicts with base::get() and base::merge().
@@ -10,15 +10,12 @@
 # LOAD CONFIGURATION
 # ═══════════════════════════════════════════════════════════════════════════
 
-#' Get configuration
+#' Load configuration from config.yml
 #'
-#' Loads configuration from config.yml. The active configuration is determined
-#' by the R_CONFIG_ACTIVE environment variable (default, development, production).
-#'
-#' @return List with configuration values
+#' @return List with configuration values or NULL if not found
 #' @keywords internal
 .load_config <- function() {
-  # Try multiple locations for config.yml
+
   config_paths <- c(
     here::here("config.yml"),
     here::here("inst", "app", "config.yml"),
@@ -35,111 +32,128 @@
 
   if (is.null(config_file)) {
     warning("config.yml not found, using hardcoded defaults")
-    return(NULL)
+    return(list())
   }
 
   config::get(file = config_file)
 }
-# Load config once at package/app load time
+
+# Package-level config cache
 .spiralizer_config <- .load_config()
 
 # ═══════════════════════════════════════════════════════════════════════════
-# SPIRAL PARAMETERS
+# DEFAULT VALUES
 # ═══════════════════════════════════════════════════════════════════════════
 
-#' Maximum number of points allowed for spiral generation
-#' @export
-SPIRAL_MAX_POINTS <- .spiralizer_config$spiral$max_points %||% 5000L
+#' Default configuration values (fallbacks when config.yml missing)
+#' @keywords internal
+.defaults <- list(
 
-#' Minimum number of points required for Voronoi diagram
-#' @export
-SPIRAL_MIN_POINTS <- .spiralizer_config$spiral$min_points %||% 50L
+  spiral = list(
+    max_points = 5000L,
+    min_points = 50L,
+    max_angle_range = 1000L,
+    default_points = 300L
+  ),
+  sliders = list(
+    angle_min = 0L,
+    angle_max = 1000L,
+    density_min = 50L,
+    density_max = 2000L
+  ),
+  ui = list(
+    sidebar_width = 320L,
+    animation_interval_ms = 2000L,
+    slider_step_points = 50L,
+    default_angle_end = 100L
+  ),
+  reactive = list(
+    debounce_ms = 300L
+  ),
+  plot = list(
+    default_limits = c(-10, 10),
+    limit_padding = 1.1
+  ),
+  export = list(
+    png_size = 3000L,
+    png_resolution = 300L,
+    svg_size = 10L
+  ),
+  cache = list(
+    max_size_mb = 100L,
+    max_age_seconds = 3600L
+  ),
 
-#' Maximum angle range allowed
-#' @export
-SPIRAL_MAX_ANGLE_RANGE <- .spiralizer_config$spiral$max_angle_range %||% 1000L
-
-#' Default number of points
-#' @export
-SPIRAL_DEFAULT_POINTS <- .spiralizer_config$spiral$default_points %||% 300L
-
-# ═══════════════════════════════════════════════════════════════════════════
-# UI SLIDER LIMITS
-# ═══════════════════════════════════════════════════════════════════════════
-
-#' Slider minimum for angles
-#' @export
-SLIDER_ANGLE_MIN <- .spiralizer_config$sliders$angle_min %||% 0L
-
-#' Slider maximum for angles
-#' @export
-SLIDER_ANGLE_MAX <- .spiralizer_config$sliders$angle_max %||% 1000L
-
-#' Slider minimum for density
-#' @export
-SLIDER_DENSITY_MIN <- .spiralizer_config$sliders$density_min %||% 50L
-
-#' Slider maximum for density
-#' @export
-SLIDER_DENSITY_MAX <- .spiralizer_config$sliders$density_max %||% 2000L
-
-# ═══════════════════════════════════════════════════════════════════════════
-# PERFORMANCE SETTINGS
-# ═══════════════════════════════════════════════════════════════════════════
-
-#' Debounce delay in milliseconds for slider inputs
-#' @export
-DEBOUNCE_MS <- .spiralizer_config$reactive$debounce_ms %||% 300L
-
-#' Default plot limits when calculation fails
-#' @export
-DEFAULT_PLOT_LIMITS <- .spiralizer_config$plot$default_limits %||% c(-10, 10)
-
-#' Plot limit padding factor (10% padding)
-#' @export
-PLOT_LIMIT_PADDING <- .spiralizer_config$plot$limit_padding %||% 1.1
-
-# ═══════════════════════════════════════════════════════════════════════════
-# EXPORT SETTINGS
-# ═══════════════════════════════════════════════════════════════════════════
-
-#' PNG export dimensions (pixels)
-#' @export
-EXPORT_PNG_SIZE <- .spiralizer_config$export$png_size %||% 3000L
-
-#' PNG export resolution (DPI)
-#' @export
-EXPORT_PNG_RES <- .spiralizer_config$export$png_resolution %||% 300L
-
-#' SVG export dimensions (inches)
-#' @export
-EXPORT_SVG_SIZE <- .spiralizer_config$export$svg_size %||% 10L
+  palette = list(
+    default = "turbo"
+  ),
+  estimation = list(
+    base_time_ms = 50,
+    per_point_time_ms = 0.3
+  ),
+  performance_modes = list(
+    high = list(max_points = 5000L, debounce_ms = 200L, cache_size_mb = 200L),
+    medium = list(max_points = 2000L, debounce_ms = 300L, cache_size_mb = 100L),
+    low = list(max_points = 1000L, debounce_ms = 500L, cache_size_mb = 50L)
+  )
+)
 
 # ═══════════════════════════════════════════════════════════════════════════
-# CACHE SETTINGS
+# CONFIG ACCESS FUNCTION
 # ═══════════════════════════════════════════════════════════════════════════
 
-#' Cache maximum size in MB
+#' Get Configuration Setting
+#'
+#' Retrieves a configuration value from config.yml with fallback to defaults.
+#' Uses dot notation for nested access: get_setting("spiral", "max_points")
+#'
+#' @param ... Path components to the setting (e.g., "spiral", "max_points")
+#' @return The configuration value, or the default if not found
 #' @export
-CACHE_MAX_SIZE_MB <- .spiralizer_config$cache$max_size_mb %||% 100L
+#'
+#' @examples
+#' \dontrun{
+#' get_setting("spiral", "max_points")
+#' get_setting("ui", "sidebar_width")
+#' get_setting("performance_modes", "high")
+#' }
+get_setting <- function(...) {
+  keys <- list(...)
 
-#' Cache maximum age in seconds
-#' @export
-CACHE_MAX_AGE_SECONDS <- .spiralizer_config$cache$max_age_seconds %||% 3600L
 
-# ═══════════════════════════════════════════════════════════════════════════
-# PALETTE SETTINGS
-# ═══════════════════════════════════════════════════════════════════════════
+  # Navigate config
 
-#' Default color palette
-#' @export
-DEFAULT_PALETTE <- .spiralizer_config$palette$default %||% "turbo"
+  value <- .spiralizer_config
+
+  for (key in keys) {
+    if (is.null(value) || !is.list(value)) {
+      value <- NULL
+      break
+    }
+    value <- value[[key]]
+  }
+
+  # If not found in config, use defaults
+
+  if (is.null(value)) {
+    value <- .defaults
+    for (key in keys) {
+      if (is.null(value) || !is.list(value)) {
+        value <- NULL
+        break
+      }
+      value <- value[[key]]
+    }
+  }
+
+  value
+}
 
 # ═══════════════════════════════════════════════════════════════════════════
 # UTILITY FUNCTIONS
 # ═══════════════════════════════════════════════════════════════════════════
 
-#' Get current configuration name
+#' Get Current Configuration Name
 #'
 #' Returns the name of the active configuration (default, development, production).
 #'
@@ -149,9 +163,11 @@ get_config_name <- function() {
   Sys.getenv("R_CONFIG_ACTIVE", "default")
 }
 
-#' Reload configuration
+#' Reload Configuration
 #'
-#' Reloads configuration from config.yml. Useful after changing the config file.
+#' Reloads configuration from config.yml. Call this after changing the config
+#' file or switching environments. In deployed apps, a container restart
+#' achieves the same effect.
 #'
 #' @export
 reload_config <- function() {

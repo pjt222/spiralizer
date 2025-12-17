@@ -169,6 +169,8 @@ controls_ui <- function(id) {
           selected = get_setting("palette", "default"),
           width = "100%"
         ),
+        # Custom color pickers (rendered from server when custom palette selected)
+        uiOutput(ns("custom_colors_ui")),
         input_switch(
           ns("invert_palette"),
           label = "Invert palette",
@@ -226,6 +228,8 @@ controls_server <- function(id) {
       point_density = get_setting("spiral", "default_points"),
       color_palette = get_setting("palette", "default"),
       invert_palette = FALSE,
+      custom_color_start = "#1a1a2e",
+      custom_color_end = "#00ff88",
       truncate_enabled = get_setting("truncation", "enabled"),
       truncate_factor = get_setting("truncation", "factor_default")
     )
@@ -300,6 +304,49 @@ controls_server <- function(id) {
     })
 
     # ─────────────────────────────────────────────────────────────────
+    # CUSTOM COLOR PALETTE
+    # ─────────────────────────────────────────────────────────────────
+
+    # Render custom color pickers when "custom" palette is selected
+    output$custom_colors_ui <- renderUI({
+      req(input$color_palette == "custom")
+      tagList(
+        div(
+          class = "d-flex gap-2 my-2",
+          div(
+            class = "flex-fill",
+            tags$label("Start", class = "form-label small text-muted mb-1"),
+            colourpicker::colourInput(
+              session$ns("custom_color_start"),
+              label = NULL,
+              value = isolate(params$custom_color_start),
+              showColour = "background"
+            )
+          ),
+          div(
+            class = "flex-fill",
+            tags$label("End", class = "form-label small text-muted mb-1"),
+            colourpicker::colourInput(
+              session$ns("custom_color_end"),
+              label = NULL,
+              value = isolate(params$custom_color_end),
+              showColour = "background"
+            )
+          )
+        )
+      )
+    })
+
+    # Update custom colors (immediate, no debounce needed for colors)
+    observeEvent(input$custom_color_start, {
+      params$custom_color_start <- input$custom_color_start
+    }, ignoreInit = TRUE, ignoreNULL = TRUE)
+
+    observeEvent(input$custom_color_end, {
+      params$custom_color_end <- input$custom_color_end
+    }, ignoreInit = TRUE, ignoreNULL = TRUE)
+
+    # ─────────────────────────────────────────────────────────────────
     # TRUNCATION PARAMETER UPDATES
     # ─────────────────────────────────────────────────────────────────
 
@@ -322,11 +369,24 @@ controls_server <- function(id) {
       )
     })
 
-    # Sync for truncate_factor (set up after UI renders)
-    observe({
-      req(input$truncate_enabled)
-      sync_slider_numeric("truncate_factor", "truncate_factor_num")
-    }) |> bindEvent(input$truncate_enabled, once = TRUE)
+    # Bidirectional sync for truncate_factor (explicit observers for dynamic UI)
+    # Slider → Numeric
+    observeEvent(input$truncate_factor, {
+      slider_val <- input$truncate_factor
+      numeric_val <- input$truncate_factor_num
+      if (!is.null(slider_val) && (is.null(numeric_val) || is.na(numeric_val) || slider_val != numeric_val)) {
+        updateNumericInput(session, "truncate_factor_num", value = slider_val)
+      }
+    }, ignoreInit = TRUE, ignoreNULL = TRUE)
+
+    # Numeric → Slider
+    observeEvent(input$truncate_factor_num, {
+      numeric_val <- input$truncate_factor_num
+      slider_val <- input$truncate_factor
+      if (!is.null(numeric_val) && !is.na(numeric_val) && (is.null(slider_val) || numeric_val != slider_val)) {
+        updateSliderInput(session, "truncate_factor", value = numeric_val)
+      }
+    }, ignoreInit = TRUE, ignoreNULL = TRUE)
 
     # Truncation factor (debounced since it affects computation)
     truncate_factor_d <- reactive({ input$truncate_factor }) |> debounce(debounce_ms)

@@ -21,7 +21,8 @@ if (requireNamespace("spiralizer", quietly = TRUE) &&
   library(viridisLite)
   library(memoise)
   library(cachem)
-  library(config)
+  # Note: config package not loaded with library() to avoid masking base::get()
+  # and base::merge(). Use config::get() directly in constants.R instead.
   library(here)
 
   # Source all R files in dependency order (flat R/ directory)

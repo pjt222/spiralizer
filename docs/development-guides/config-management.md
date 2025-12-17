@@ -13,19 +13,38 @@ The `config` package reads YAML configuration files with environment-based profi
 default:
   spiral:
     max_points: 5000
-    min_points: 3
+    min_points: 50
+    default_points: 300
+  sliders:
+    angle_min: 0
+    angle_max: 1000
+    density_min: 50
+    density_max: 2000
+  ui:
+    sidebar_width: 320
+    animation_interval_ms: 2000
+    slider_step_points: 50
+    default_angle_end: 100
   cache:
     max_size_mb: 100
+  estimation:
+    base_time_ms: 50
+    per_point_time_ms: 0.3
+  performance_modes:
+    high:
+      max_points: 5000
+      debounce_ms: 200
+      cache_size_mb: 200
 
 development:
-  inherits: default
   spiral:
-    max_points: 10000
+    max_points: 2000
+  cache:
+    max_size_mb: 50
 
 production:
-  inherits: default
   cache:
-    max_size_mb: 500
+    max_size_mb: 200
 ```
 
 ### Important: Namespace Conflicts
@@ -78,19 +97,22 @@ During package loading, the config file location varies:
 }
 ```
 
-### Safe Default Pattern
+### Safe Default Pattern (get_setting)
 
-Always provide fallback values using `%||%`:
+Use `get_setting()` for clean config access with fallback defaults:
 
 ```r
-# Define %||% first (see r-package-structure.md)
-`%||%` <- function(lhs, rhs) if (is.null(lhs)) rhs else lhs
+# Access config values with automatic fallback to defaults
+get_setting("spiral", "max_points")    # Returns 5000 if not in config
+get_setting("cache", "max_size_mb")    # Returns 100 if not in config
+get_setting("performance_modes", "high")  # Returns nested config
 
-# Load config with safe defaults
-.config <- .load_config()
-
-SPIRAL_MAX_POINTS <- .config$spiral$max_points %||% 5000L
-CACHE_MAX_SIZE_MB <- .config$cache$max_size_mb %||% 100L
+# Defaults are defined in .defaults list in constants.R
+.defaults <- list(
+  spiral = list(max_points = 5000L, min_points = 50L, ...),
+  cache = list(max_size_mb = 100L, ...),
+  ...
+)
 ```
 
 ## Environment-Based Configuration
@@ -116,28 +138,37 @@ reload_config <- function() {
 }
 ```
 
-## Constants vs Runtime Configuration
+## Config-Only Approach (Recommended)
 
-### Compile-Time Constants
-
-Values set at package load, used throughout:
+Spiralizer uses a config-only approach with `get_setting()`:
 
 ```r
-# R/constants.R
-SPIRAL_MAX_POINTS <- .config$spiral$max_points %||% 5000L
+# All values come from config.yml via get_setting()
+width = get_setting("ui", "sidebar_width")
+min_points = get_setting("spiral", "min_points")
+
+# For deployment:
+# - Container restart reloads config automatically
+# - Development: call reload_config() to pick up changes
 ```
 
-**Pros**: Fast access, no function call overhead
-**Cons**: Requires package reload to change
+**Pros**:
+- Single source of truth (config.yml)
+- No duplicate fallback values scattered in code
+- Container restart picks up config changes
+- Clean, readable code
 
-### Runtime Configuration
+**Cons**:
+- Slight function call overhead (negligible in practice)
 
-Values fetched on each access:
+### Legacy: Compile-Time Constants
+
+The old approach used exported constants:
 
 ```r
-get_max_points <- function() {
-  config::get("spiral")$max_points %||% 5000L
-}
+# OLD - constants loaded at package load time
+SPIRAL_MAX_POINTS <- .config$spiral$max_points %||% 5000L
+# Required package reload to change
 ```
 
 **Pros**: Can change without reload

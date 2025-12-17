@@ -133,5 +133,6 @@ palette_choices <- list(
   "Inferno" = "inferno",
   "Magma" = "magma",
   "Cividis" = "cividis",
-  "Zen Mono" = "zen_mono"
+  "Zen Mono" = "zen_mono",
+  "Custom" = "custom"
 )

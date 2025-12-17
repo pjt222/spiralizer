@@ -75,28 +75,18 @@ get_performance_recommendations <- function(mode = NULL) {
   if (is.null(mode)) {
     mode <- check_performance_mode()
   }
-  
-  recommendations <- switch(mode,
-    "high" = list(
-      max_points = 5000,
-      debounce_ms = 200,
-      cache_size_mb = 200,
-      enable_animations = TRUE
-    ),
-    "medium" = list(
-      max_points = 2000,
-      debounce_ms = 300,
-      cache_size_mb = 100,
-      enable_animations = TRUE
-    ),
-    "low" = list(
-      max_points = 1000,
-      debounce_ms = 500,
-      cache_size_mb = 50,
-      enable_animations = FALSE
-    )
+
+  # Get base recommendations from config
+  mode_config <- get_setting("performance_modes", mode)
+
+  # Add enable_animations based on mode (low = FALSE, others = TRUE)
+  recommendations <- list(
+    max_points = mode_config$max_points,
+    debounce_ms = mode_config$debounce_ms,
+    cache_size_mb = mode_config$cache_size_mb,
+    enable_animations = (mode != "low")
   )
-  
+
   return(recommendations)
 }
 
