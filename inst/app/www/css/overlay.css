@@ -51,8 +51,56 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
+   SLIDER + NUMERIC INPUT PAIR
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Align numeric input with slider track */
+.slider-numeric-group {
+  margin-bottom: 0.5rem;
+}
+
+.slider-numeric-group .form-control {
+  background: var(--bs-body-bg) !important;
+  border-color: var(--bs-secondary) !important;
+  color: var(--bs-body-color) !important;
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 0.25rem 0.5rem;
+  height: auto;
+  transition: var(--zen-transition-fast);
+}
+
+.slider-numeric-group .form-control:focus {
+  border-color: var(--bs-primary) !important;
+  box-shadow: var(--zen-glow-subtle);
+  outline: none;
+}
+
+/* Hide spinner buttons for cleaner look */
+.slider-numeric-group input[type="number"]::-webkit-outer-spin-button,
+.slider-numeric-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.slider-numeric-group input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Vertically center numeric input with slider */
+.slider-numeric-group > .flex-grow-1 {
+  margin-top: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
    SLIDER ENHANCEMENTS
    ═══════════════════════════════════════════════════════════════════════ */
+
+/* Hide min/max labels - only show current value */
+.irs--shiny .irs-min,
+.irs--shiny .irs-max {
+  display: none !important;
+}
 
 /* Shiny slider track */
 .irs--shiny .irs-bar {

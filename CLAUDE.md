@@ -55,6 +55,7 @@ spiralizer/
 │   ├── docs/                # Documentation (installed with package)
 │   └── scripts/             # Utility scripts
 │       ├── deploy.R
+│       ├── dev.R             # Fast dev launcher (load_all + run)
 │       └── run.R
 │
 ├── src/                     # C++ source (Rcpp)
@@ -90,14 +91,20 @@ app <- spiralizer_app()
 shiny::runApp(app)
 ```
 
-### Development mode
+### Development mode (recommended)
 ```r
-# From project root
-source(".Rprofile")  # Activate renv
-shiny::runApp("inst/app")
+# Fast iteration with load_all() - no C++ recompilation
+source("inst/scripts/dev.R")
+```
 
-# Or source directly
-source("inst/app/app.R")
+### Alternative development methods
+```r
+# Full reinstall (slow, recompiles C++)
+devtools::install()
+run_spiralizer()
+
+# Direct runApp (may use installed package if present)
+shiny::runApp("inst/app")
 ```
 
 ## UI Structure
@@ -108,7 +115,8 @@ page_navbar
     └── layout_sidebar
         ├── sidebar (collapsible, 320px)
         │   └── controls_ui
-        │       ├── card: Spiral Shape (Start, End, Density sliders)
+        │       ├── card: Angle (Start/End sliders + numeric inputs)
+        │       ├── card: Points (density slider + numeric input)
         │       └── card: Color (palette dropdown + invert switch)
         └── plot_ui
             ├── plotOutput (fills viewport)
@@ -130,13 +138,18 @@ Configuration is stored in `inst/app/config.yml`:
 default:
   spiral:
     max_points: 5000
-    min_points: 3
+    min_points: 50
     default_points: 300
   sliders:
     angle_min: 0
     angle_max: 1000
-    density_min: 3
+    density_min: 50
     density_max: 2000
+  ui:
+    sidebar_width: 320
+    animation_interval_ms: 2000
+    slider_step_points: 50
+    default_angle_end: 100
   reactive:
     debounce_ms: 300
   cache:
@@ -148,6 +161,22 @@ default:
     png_size: 3000
     png_resolution: 300
     svg_size: 10
+  estimation:
+    base_time_ms: 50
+    per_point_time_ms: 0.3
+  performance_modes:
+    high:
+      max_points: 5000
+      debounce_ms: 200
+      cache_size_mb: 200
+    medium:
+      max_points: 2000
+      debounce_ms: 300
+      cache_size_mb: 100
+    low:
+      max_points: 1000
+      debounce_ms: 500
+      cache_size_mb: 50
 ```
 
 ### Switching Configurations
@@ -192,6 +221,11 @@ The R code auto-detects if Rcpp functions are available and uses them.
 - `theme_colors` - Color palette list
 - `palette_choices` - Available color palettes
 
+### Config Access
+- `get_setting("section", "key")` - Get config value with fallback default
+- `get_config_name()` - Get active config name (default/development/production)
+- `reload_config()` - Reload config from file (useful in development)
+
 ## Fermat Spiral Formula
 ```
 x = √θ * cos(θ)
@@ -203,6 +237,39 @@ Where θ ranges from `angle_start` to `angle_end` with `point_density` samples.
 - Turbo, Viridis, Plasma, Inferno, Magma, Cividis (viridisLite)
 - Zen Mono (black → accent gradient)
 - All palettes support inversion via `rev(colors)`
+
+## Shiny UI Patterns
+
+### Bidirectional Slider + Numeric Input Sync
+Each slider has a paired numeric input for precise value entry. The sync pattern in `ui_controls.R`:
+
+```r
+sync_slider_numeric <- function(slider_id, numeric_id) {
+  # Slider → Numeric
+  observeEvent(input[[slider_id]], {
+    slider_val <- input[[slider_id]]
+    numeric_val <- input[[numeric_id]]
+    if (!is.null(slider_val) && (is.null(numeric_val) || is.na(numeric_val) || slider_val != numeric_val)) {
+      updateNumericInput(session, numeric_id, value = slider_val)
+    }
+  }, ignoreInit = TRUE)
+
+  # Numeric → Slider (skip NA values from cleared input)
+  observeEvent(input[[numeric_id]], {
+    numeric_val <- input[[numeric_id]]
+    slider_val <- input[[slider_id]]
+    if (!is.null(numeric_val) && !is.na(numeric_val) && (is.null(slider_val) || numeric_val != slider_val)) {
+      updateSliderInput(session, slider_id, value = numeric_val)
+    }
+  }, ignoreInit = TRUE)
+}
+```
+
+**Key insights:**
+- `numericInput` returns `NA` (not `NULL`) when cleared or invalid
+- Always check `!is.na()` before comparisons to avoid "missing value where TRUE/FALSE needed"
+- Use `ignoreInit = TRUE` to prevent race conditions on startup
+- Compare values before updating to avoid infinite loops
 
 ## Code Style
 - Descriptive variable names
