@@ -310,29 +310,21 @@ controls_server <- function(id) {
     # Render custom color pickers when "custom" palette is selected
     output$custom_colors_ui <- renderUI({
       req(input$color_palette == "custom")
-      tagList(
-        div(
-          class = "d-flex gap-2 my-2",
-          div(
-            class = "flex-fill",
-            tags$label("Start", class = "form-label small text-muted mb-1"),
-            colourpicker::colourInput(
-              session$ns("custom_color_start"),
-              label = NULL,
-              value = isolate(params$custom_color_start),
-              showColour = "background"
-            )
-          ),
-          div(
-            class = "flex-fill",
-            tags$label("End", class = "form-label small text-muted mb-1"),
-            colourpicker::colourInput(
-              session$ns("custom_color_end"),
-              label = NULL,
-              value = isolate(params$custom_color_end),
-              showColour = "background"
-            )
-          )
+      div(
+        class = "d-flex gap-2 mt-2",
+        colourpicker::colourInput(
+          session$ns("custom_color_start"),
+          label = NULL,
+          value = isolate(params$custom_color_start),
+          showColour = "background",
+          width = "100%"
+        ),
+        colourpicker::colourInput(
+          session$ns("custom_color_end"),
+          label = NULL,
+          value = isolate(params$custom_color_end),
+          showColour = "background",
+          width = "100%"
         )
       )
     })
