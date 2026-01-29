@@ -51,7 +51,7 @@ jobs:
 
       - name: Run R CMD check
         run: |
-          Rscript -e "rcmdcheck::rcmdcheck(args = c('--no-manual', '--as-cran'), error_on = 'warning', check_dir = 'check')"
+          Rscript -e "rcmdcheck::rcmdcheck(args = c('--no-manual', '--as-cran'), error_on = 'error', check_dir = 'check')"
 
       - name: Show testthat output
         if: always()
