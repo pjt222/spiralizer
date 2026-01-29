@@ -2,10 +2,6 @@
 #
 # Handles the spiral visualization rendering and export functionality.
 # The plot fills the available viewport space.
-#
-#' @import shiny
-#' @import bslib
-#' @importFrom grDevices dev.off png svg colorRampPalette
 
 # ═══════════════════════════════════════════════════════════════════════
 # UI MODULE
@@ -15,6 +11,11 @@
 #'
 #' Creates the plot output container that fills available space.
 #' Includes loading overlay for visual feedback during computation.
+#'
+#' @import shiny
+#' @import bslib
+#' @importFrom grDevices dev.off png svg colorRampPalette
+#' @importFrom graphics par text
 #'
 #' @param id Module namespace ID
 #' @return Shiny tagList

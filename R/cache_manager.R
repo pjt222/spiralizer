@@ -1,12 +1,13 @@
 # cache_manager.R - Intelligent caching system for Voronoi computations
-#
-#' @import memoise
-#' @import cachem
 
 # Internal environment for lazy-initialized cache objects
 .cache_env <- new.env(parent = emptyenv())
 
 #' Get or create the spiral cache
+#'
+#' @import memoise
+#' @import cachem
+#'
 #' @keywords internal
 .get_spiral_cache <- function() {
   if (is.null(.cache_env$spiral_cache)) {

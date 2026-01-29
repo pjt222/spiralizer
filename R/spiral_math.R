@@ -4,10 +4,21 @@
 # Provides both R and Rcpp implementations. Use generate_fermat_spiral()
 # which automatically selects the fastest available implementation.
 
-# Check if Rcpp functions are available
+# Check if Rcpp functions are available and working
 .rcpp_available <- function() {
+  # Check if the function exists and is actually callable
+  # (not just an exported stub without compiled code)
+  if (!exists("generate_spiral_cpp", mode = "function")) {
+    return(FALSE)
+  }
 
-  exists("generate_spiral_cpp", mode = "function")
+  # Try a minimal call to verify the C++ code is actually loaded
+  tryCatch({
+    generate_spiral_cpp(0, 1, 10L)
+    TRUE
+  }, error = function(e) {
+    FALSE
+  })
 }
 
 #' Generate Fermat Spiral Points
@@ -91,43 +102,92 @@ calculate_plot_limits <- function(voronoi_object) {
 #' Extract Vertices from Voronoi Object
 #'
 #' Efficiently extracts all vertex coordinates from a Voronoi tessellation.
+#' Validates tessellation structure and provides informative errors on failure.
+#' Supports both R6 Edge objects (tessellation >= 2.0) and legacy list structures.
 #'
-#' @param voronoi_object Voronoi tessellation object
-#' @return Matrix with x,y coordinates or NULL
+#' @param voronoi_object Voronoi tessellation object from tessellation package
+#' @return Matrix with x,y coordinates or NULL if empty
 #' @keywords internal
 extract_voronoi_vertices <- function(voronoi_object) {
+  # Validate input structure
+  if (!is.list(voronoi_object)) {
+    stop("Expected Voronoi object to be a list, got: ", class(voronoi_object)[1])
+  }
+
+  if (length(voronoi_object) == 0) {
+    return(NULL)
+  }
+
   # Pre-allocate list for vertices
   vertex_list <- vector("list", length(voronoi_object))
+  skipped_cells <- 0
 
   for (i in seq_along(voronoi_object)) {
     cell <- voronoi_object[[i]]
-    if (!is.null(cell[["cell"]])) {
-      edges <- cell[["cell"]]
-      n_edges <- length(edges)
-      if (n_edges > 0) {
-        # Collect vertices safely
-        vertices <- list()
-        for (j in seq_len(n_edges)) {
-          edge <- edges[[j]]
-          pt_a <- edge[["A"]]
-          pt_b <- edge[["B"]]
-          # Only use 2D coordinates (first 2 elements)
-          if (!is.null(pt_a) && length(pt_a) >= 2) {
-            vertices[[length(vertices) + 1]] <- pt_a[1:2]
-          }
-          if (!is.null(pt_b) && length(pt_b) >= 2) {
-            vertices[[length(vertices) + 1]] <- pt_b[1:2]
-          }
-        }
-        if (length(vertices) > 0) {
-          vertex_list[[i]] <- do.call(rbind, vertices)
-        }
+
+    # Validate cell structure
+    if (!is.list(cell)) {
+      skipped_cells <- skipped_cells + 1
+      next
+    }
+
+    if (is.null(cell[["cell"]])) {
+      skipped_cells <- skipped_cells + 1
+      next
+    }
+
+    edges <- cell[["cell"]]
+    n_edges <- length(edges)
+
+    if (n_edges == 0) {
+      next
+    }
+
+    # Collect vertices safely
+    vertices <- list()
+    for (j in seq_len(n_edges)) {
+      edge <- edges[[j]]
+
+      # Extract vertices - supports both R6 Edge objects and legacy lists
+      # tessellation >= 2.0 uses R6 objects with $A and $B fields
+      pt_a <- if (inherits(edge, "R6")) edge$A else edge[["A"]]
+      pt_b <- if (inherits(edge, "R6")) edge$B else edge[["B"]]
+
+      # Only use 2D coordinates (first 2 elements)
+      if (!is.null(pt_a) && is.numeric(pt_a) && length(pt_a) >= 2) {
+        vertices[[length(vertices) + 1]] <- pt_a[1:2]
       }
+      if (!is.null(pt_b) && is.numeric(pt_b) && length(pt_b) >= 2) {
+        vertices[[length(vertices) + 1]] <- pt_b[1:2]
+      }
+    }
+
+    if (length(vertices) > 0) {
+      vertex_list[[i]] <- do.call(rbind, vertices)
     }
   }
 
+  # Warn if significant data was skipped (may indicate API change)
+  total_cells <- length(voronoi_object)
+  if (skipped_cells > total_cells * 0.5) {
+    warning(
+      sprintf(
+        "Voronoi extraction: %d/%d cells skipped (missing 'cell' element). ",
+        skipped_cells, total_cells
+      ),
+      "This may indicate a tessellation package API change."
+    )
+  }
+
   # Combine all vertices
-  do.call(rbind, vertex_list)
+  result <- do.call(rbind, vertex_list)
+
+  if (is.null(result) || nrow(result) == 0) {
+    warning("No vertices extracted from Voronoi object.")
+    return(NULL)
+  }
+
+  result
 }
 
 #' Truncate Spiral Points by Radius
@@ -138,6 +198,8 @@ extract_voronoi_vertices <- function(voronoi_object) {
 #' @param spiral_points Matrix with x,y coordinates
 #' @param factor Truncation factor: points with radius > factor * median_radius are removed
 #' @return Matrix with truncated x,y coordinates
+#'
+#' @importFrom stats median
 #' @export
 truncate_spiral_points <- function(spiral_points, factor = 2.0) {
 

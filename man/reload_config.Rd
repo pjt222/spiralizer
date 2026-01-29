@@ -2,10 +2,12 @@
 % Please edit documentation in R/constants.R
 \name{reload_config}
 \alias{reload_config}
-\title{Reload configuration}
+\title{Reload Configuration}
 \usage{
 reload_config()
 }
 \description{
-Reloads configuration from config.yml. Useful after changing the config file.
+Reloads configuration from config.yml. Call this after changing the config
+file or switching environments. In deployed apps, a container restart
+achieves the same effect.
 }

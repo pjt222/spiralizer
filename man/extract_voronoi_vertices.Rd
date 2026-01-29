@@ -7,12 +7,14 @@
 extract_voronoi_vertices(voronoi_object)
 }
 \arguments{
-\item{voronoi_object}{Voronoi tessellation object}
+\item{voronoi_object}{Voronoi tessellation object from tessellation package}
 }
 \value{
-Matrix with x,y coordinates or NULL
+Matrix with x,y coordinates or NULL if empty
 }
 \description{
 Efficiently extracts all vertex coordinates from a Voronoi tessellation.
+Validates tessellation structure and provides informative errors on failure.
+Supports both R6 Edge objects (tessellation >= 2.0) and legacy list structures.
 }
 \keyword{internal}

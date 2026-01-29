@@ -2,15 +2,14 @@
 % Please edit documentation in R/constants.R
 \name{.load_config}
 \alias{.load_config}
-\title{Get configuration}
+\title{Load configuration from config.yml}
 \usage{
 .load_config()
 }
 \value{
-List with configuration values
+List with configuration values or NULL if not found
 }
 \description{
-Loads configuration from config.yml. The active configuration is determined
-by the R_CONFIG_ACTIVE environment variable (default, development, production).
+Load configuration from config.yml
 }
 \keyword{internal}

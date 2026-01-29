@@ -6,6 +6,12 @@
 \usage{
 get_performance_recommendations(mode = NULL)
 }
+\arguments{
+\item{mode}{Performance mode ("high", "medium", "low") or NULL to auto-detect}
+}
+\value{
+List of recommended settings
+}
 \description{
 Get Recommended Settings Based on Performance Mode
 }

@@ -1,8 +1,12 @@
 # performance.R - Performance monitoring and optimization utilities
 
 #' Performance Timer
-#' 
+#'
 #' Simple timing wrapper for performance monitoring
+#'
+#' @param expr Expression to time
+#' @param label Label for timing output
+#' @return Result of expr with elapsed_ms attribute
 #' @export
 time_it <- function(expr, label = "Operation") {
   start_time <- Sys.time()
@@ -20,6 +24,9 @@ time_it <- function(expr, label = "Operation") {
 }
 
 #' Create Performance Report
+#'
+#' @param timings Numeric vector of timing values (spiral, voronoi, plot)
+#' @return Performance report object
 #' @export
 create_performance_report <- function(timings) {
   report <- list(
@@ -70,6 +77,9 @@ check_performance_mode <- function() {
 }
 
 #' Get Recommended Settings Based on Performance Mode
+#'
+#' @param mode Performance mode ("high", "medium", "low") or NULL to auto-detect
+#' @return List of recommended settings
 #' @export
 get_performance_recommendations <- function(mode = NULL) {
   if (is.null(mode)) {

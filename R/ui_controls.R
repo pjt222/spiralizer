@@ -2,9 +2,6 @@
 #
 # Provides spiral parameter controls using bslib cards.
 # Minimal, focused interface with all essential controls visible.
-#
-#' @import shiny
-#' @import bslib
 
 # ═══════════════════════════════════════════════════════════════════════
 # HELPER FUNCTIONS
@@ -14,6 +11,9 @@
 #'
 #' Helper function that creates a slider input paired with a numeric input.
 #' Both inputs sync bidirectionally via server-side observers.
+#'
+#' @import shiny
+#' @import bslib
 #'
 #' @param ns Namespace function from module
 #' @param id Base input ID (numeric input will be id_num)

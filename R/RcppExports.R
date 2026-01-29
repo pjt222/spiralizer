@@ -32,7 +32,6 @@ calculate_limits_cpp <- function(vertices, padding = 1.1) {
 #' Counts bounded cells by checking if all vertices are finite.
 #' Much faster than R's Filter() for large cell counts.
 #'
-#' @param vertex_counts IntegerVector of vertex counts per cell
 #' @param has_infinite LogicalVector indicating if cell has infinite vertices
 #' @return Integer count of bounded cells
 #' @export

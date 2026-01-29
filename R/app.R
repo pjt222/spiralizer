@@ -2,10 +2,6 @@
 #
 # Minimalist Voronoi spiral generator with bslib/Bootstrap 5 UI.
 # The spiral visualization is the focus; UI disappears when not needed.
-#
-#' @import shiny
-#' @import bslib
-#' @import here
 
 # ═══════════════════════════════════════════════════════════════════════
 # UI DEFINITION
@@ -15,6 +11,10 @@
 #'
 #' Creates the main application UI using bslib components.
 #' Features a collapsible sidebar and full-viewport spiral display.
+#'
+#' @import shiny
+#' @import bslib
+#' @import here
 #'
 #' @return Shiny UI object
 #' @export

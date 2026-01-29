@@ -6,6 +6,12 @@
 \usage{
 create_performance_report(timings)
 }
+\arguments{
+\item{timings}{Numeric vector of timing values (spiral, voronoi, plot)}
+}
+\value{
+Performance report object
+}
 \description{
 Create Performance Report
 }

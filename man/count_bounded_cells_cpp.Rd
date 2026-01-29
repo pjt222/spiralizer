@@ -8,8 +8,6 @@ count_bounded_cells_cpp(has_infinite)
 }
 \arguments{
 \item{has_infinite}{LogicalVector indicating if cell has infinite vertices}
-
-\item{vertex_counts}{IntegerVector of vertex counts per cell}
 }
 \value{
 Integer count of bounded cells

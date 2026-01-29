@@ -6,6 +6,14 @@
 \usage{
 time_it(expr, label = "Operation")
 }
+\arguments{
+\item{expr}{Expression to time}
+
+\item{label}{Label for timing output}
+}
+\value{
+Result of expr with elapsed_ms attribute
+}
 \description{
 Simple timing wrapper for performance monitoring
 }

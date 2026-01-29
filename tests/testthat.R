@@ -1,7 +1,7 @@
-# Test runner for spiralizer project
+# This file is part of the standard R package structure for testthat.
+# It is automatically run by R CMD check.
 
 library(testthat)
-library(here)
+library(spiralizer)
 
-# Run tests
-test_dir(here("tests", "testthat"))
+test_check("spiralizer")

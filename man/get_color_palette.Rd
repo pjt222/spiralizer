@@ -4,7 +4,13 @@
 \alias{get_color_palette}
 \title{Get Color Palette}
 \usage{
-get_color_palette(palette_name, n_colors, invert = FALSE)
+get_color_palette(
+  palette_name,
+  n_colors,
+  invert = FALSE,
+  custom_start = NULL,
+  custom_end = NULL
+)
 }
 \arguments{
 \item{palette_name}{Character name of the palette}
@@ -12,6 +18,10 @@ get_color_palette(palette_name, n_colors, invert = FALSE)
 \item{n_colors}{Number of colors to generate}
 
 \item{invert}{Logical, whether to reverse the palette}
+
+\item{custom_start}{Start color for custom palette (hex string)}
+
+\item{custom_end}{End color for custom palette (hex string)}
 }
 \value{
 Character vector of hex colors

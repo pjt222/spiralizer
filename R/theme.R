@@ -2,13 +2,13 @@
 #
 # This file defines the visual theme using bslib with Bootstrap 5
 # and the Bootswatch "darkly" preset as foundation.
-#
-#' @import bslib
 
 #' Spiralizer Theme
 #'
 #' Creates the main application theme using bslib.
 #' Based on Bootstrap 5 with darkly preset and zen customizations.
+#'
+#' @import bslib
 #'
 #' @return A bslib theme object
 #' @export

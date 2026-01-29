@@ -5,7 +5,7 @@
 \alias{palette_choices}
 \title{Available color palettes for spirals}
 \format{
-An object of class \code{list} of length 7.
+An object of class \code{list} of length 8.
 }
 \usage{
 palette_choices

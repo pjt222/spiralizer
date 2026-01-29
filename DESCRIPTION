@@ -40,11 +40,13 @@ Imports:
     here,
     memoise,
     shiny (>= 1.8.0),
-    tessellation,
+    tessellation (>= 2.3.0),
     viridisLite
 Suggests:
     DBI,
+    devtools,
     duckdb,
+    rcmdcheck,
     Rcpp,
     testthat (>= 3.0.0)
 LinkingTo:

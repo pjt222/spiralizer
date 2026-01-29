@@ -1,7 +1,6 @@
 # test_spiral_math.R - Unit tests for spiral mathematics
 
 library(testthat)
-library(spiralizer)
 
 test_that("generate_fermat_spiral creates correct number of points", {
   points <- generate_fermat_spiral(0, 100, 50)
@@ -80,4 +79,39 @@ test_that("estimate_computation_time provides reasonable estimates", {
   expect_true(time_10 < time_100)
   expect_true(time_100 < time_1000)
   expect_true(time_10 > 0)
+})
+
+test_that("compute_voronoi returns expected structure", {
+  spiral <- generate_fermat_spiral(0, 100, 100)
+  result <- compute_voronoi(spiral)
+
+  # Verify return structure
+  expect_true(is.list(result))
+  expect_true("voronoi" %in% names(result))
+  expect_true("bounded_count" %in% names(result))
+  expect_true(is.numeric(result$bounded_count))
+  expect_gte(result$bounded_count, 0)
+})
+
+test_that("extract_voronoi_vertices validates tessellation structure", {
+  # Non-list input should error
+  expect_error(
+    spiralizer:::extract_voronoi_vertices("not a list"),
+    "Expected Voronoi object to be a list"
+  )
+
+  # Empty list should return NULL
+  result <- spiralizer:::extract_voronoi_vertices(list())
+  expect_null(result)
+})
+
+test_that("calculate_plot_limits works with valid voronoi", {
+  spiral <- generate_fermat_spiral(0, 100, 100)
+  voronoi_result <- compute_voronoi(spiral)
+
+  limits <- calculate_plot_limits(voronoi_result$voronoi)
+
+  expect_true(is.numeric(limits))
+  expect_equal(length(limits), 2)
+  expect_true(limits[1] < limits[2])  # min < max
 })

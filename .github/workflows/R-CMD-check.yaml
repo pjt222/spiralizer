@@ -45,20 +45,22 @@ jobs:
       - name: Setup renv
         uses: r-lib/actions/setup-renv@v2
 
-      - name: Run tests
+      - name: Install package
         run: |
-          Rscript -e "testthat::test_dir('tests/testthat', reporter = 'summary')"
+          Rscript -e "devtools::install(dependencies = FALSE, quick = TRUE)"
 
-      - name: Check app loads
+      - name: Run R CMD check
         run: |
-          Rscript -e "
-            source('R/theme.R')
-            source('R/utils/constants.R')
-            source('R/utils/cache_manager.R')
-            source('R/utils/color_utils.R')
-            source('R/utils/spiral_math.R')
-            source('R/utils/performance.R')
-            source('R/modules/ui_controls.R')
-            source('R/modules/ui_plot.R')
-            message('All modules loaded successfully')
-          "
+          Rscript -e "rcmdcheck::rcmdcheck(args = c('--no-manual', '--as-cran'), error_on = 'warning', check_dir = 'check')"
+
+      - name: Show testthat output
+        if: always()
+        run: |
+          find check -name 'testthat.Rout*' -exec cat {} \; || true
+
+      - name: Upload check results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.config.os }}-r${{ matrix.config.r }}-results
+          path: check

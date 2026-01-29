@@ -2,7 +2,7 @@
 % Please edit documentation in R/constants.R
 \name{get_config_name}
 \alias{get_config_name}
-\title{Get current configuration name}
+\title{Get Current Configuration Name}
 \usage{
 get_config_name()
 }
