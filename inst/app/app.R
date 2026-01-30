@@ -1,42 +1,77 @@
 # Spiralizer Shiny App Entry Point
 #
 # This file serves as the entry point for running the Spiralizer app
-# either via shiny::runApp() or when deployed to shinyapps.io.
+# when deployed to shinyapps.io or via shiny::runApp().
 #
-# Usage:
-#   shiny::runApp(system.file("app", package = "spiralizer"))
-#   # or
-#   spiralizer::run_spiralizer()
+# Load order:
+# 1. Try to load spiralizer package (installed via GitHub remote)
+# 2. Fall back to sourcing src/ files directly (copied during deployment)
 
-# Check if running from installed package or development
-if (requireNamespace("spiralizer", quietly = TRUE) &&
-    "spiralizer_app" %in% getNamespaceExports("spiralizer")) {
-  # Running from installed package
-  spiralizer::spiralizer_app()
-} else {
-  # Development mode: source files directly
+# ============================================================================
+# Package Loading with Fallback
+# ============================================================================
+
+spiralizer_loaded <- tryCatch({
+  library(spiralizer)
+  message("✓ Loaded spiralizer package (with Rcpp if available)")
+  TRUE
+}, error = function(e) {
+  message("⚠ Package load failed: ", e$message)
+  message("  Falling back to sourcing R files...")
+  FALSE
+})
+
+if (!spiralizer_loaded) {
+  # Load dependencies explicitly (these are installed via DESCRIPTION Imports)
   library(shiny)
   library(bslib)
   library(tessellation)
   library(viridisLite)
   library(memoise)
   library(cachem)
-  # Note: config package not loaded with library() to avoid masking base::get()
-  # and base::merge(). Use config::get() directly in constants.R instead.
+  library(colourpicker)
   library(here)
+  # Note: config package not loaded with library() to avoid masking base::get()
+  # Use config::get() directly in constants.R
 
-  # Source all R files in dependency order (flat R/ directory)
-  source(here::here("R/aaa-utils.R"))
-  source(here::here("R/theme.R"))
-  source(here::here("R/constants.R"))
-  source(here::here("R/cache_manager.R"))
-  source(here::here("R/color_utils.R"))
-  source(here::here("R/spiral_math.R"))
-  source(here::here("R/performance.R"))
-  source(here::here("R/ui_controls.R"))
-  source(here::here("R/ui_plot.R"))
-  source(here::here("R/app.R"))
+  # Source R files in dependency order
+  # These are copied to inst/app/src/ during deployment
+  # NOTE: We use "src" not "R" to prevent shiny::loadSupport() from
+  # auto-sourcing files without loading dependencies first.
+  src_dir <- "src"
+  if (!dir.exists(src_dir)) {
+    # Fallback: try relative to app directory
+    src_dir <- file.path(getwd(), "src")
+  }
 
-  # Run the app
-  spiralizer_app()
+  r_files <- c(
+    "aaa-utils.R",
+    "constants.R",
+    "color_utils.R",
+    "spiral_math.R",
+    "cache_manager.R",
+    "performance.R",
+    "theme.R",
+    "ui_controls.R",
+    "ui_plot.R",
+    "app.R"
+  )
+
+  for (f in r_files) {
+    fpath <- file.path(src_dir, f)
+    if (file.exists(fpath)) {
+      source(fpath, local = FALSE)
+      message("  Sourced ", f)
+    } else {
+      warning("  File not found: ", fpath)
+    }
+  }
+
+  message("✓ Loaded spiralizer via source files (pure R, no Rcpp)")
 }
+
+# ============================================================================
+# Run the App
+# ============================================================================
+
+spiralizer_app()

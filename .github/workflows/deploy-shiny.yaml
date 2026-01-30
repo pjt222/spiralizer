@@ -5,9 +5,16 @@ on:
     branches: [main]
     paths:
       - 'R/**'
-      - 'www/**'
+      - 'inst/app/**'
+      - 'inst/scripts/deploy.R'
+      - 'DESCRIPTION'
       - 'renv.lock'
   workflow_dispatch:
+
+# Prevent concurrent deployments to avoid shinyapps.io conflicts
+concurrency:
+  group: shinyapps-deployment
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -42,21 +49,16 @@ jobs:
           Rscript -e "install.packages('rsconnect')"
 
       - name: Deploy to shinyapps.io
+        uses: nick-fields/retry@v3
         env:
           SHINYAPPS_ACCOUNT: ${{ secrets.SHINYAPPS_ACCOUNT }}
           SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
           SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
-        run: |
-          Rscript -e "
-            rsconnect::setAccountInfo(
-              name   = Sys.getenv('SHINYAPPS_ACCOUNT'),
-              token  = Sys.getenv('SHINYAPPS_TOKEN'),
-              secret = Sys.getenv('SHINYAPPS_SECRET')
-            )
-            rsconnect::deployApp(
-              appDir = '.',
-              appPrimaryDoc = 'R/app.R',
-              appName = 'spiralizer',
-              forceUpdate = TRUE
-            )
-          "
+        with:
+          timeout_minutes: 30
+          max_attempts: 3
+          retry_wait_seconds: 60
+          command: Rscript inst/scripts/deploy.R
+
+      - name: Post-deployment stabilization
+        run: sleep 30
