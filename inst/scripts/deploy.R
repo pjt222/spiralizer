@@ -3,9 +3,10 @@
 # This script prepares the inst/app directory for deployment and deploys
 # the Spiralizer app to shinyapps.io.
 #
-# The key insight: shinyapps.io detects DESCRIPTION files and treats the
-# directory as a package. We use a Type: Shiny DESCRIPTION that installs
-# spiralizer from GitHub, with R/ files as fallback.
+# Strategy:
+# 1. Create Type: Shiny DESCRIPTION with CRAN dependencies only
+# 2. Copy R source files to src/ (NOT R/ to avoid loadSupport auto-sourcing)
+# 3. app.R will try library(spiralizer) first, then fall back to sourcing src/
 #
 # Requires: rsconnect package and configured account (or env vars)
 
@@ -28,7 +29,6 @@ library(rsconnect)
 
 APP_DIR <- "inst/app"
 APP_NAME <- "spiralizer"
-GITHUB_REPO <- "pjt222/spiralizer"
 
 # R files to copy (in load order from DESCRIPTION Collate)
 R_FILES <- c(
@@ -65,10 +65,13 @@ DEPENDENCIES <- c(
 # Helper Functions
 # ============================================================================
 
-create_shiny_description <- function(app_dir, github_repo, dependencies) {
-  # Add spiralizer itself to imports so shinyapps.io tries to install it
-  all_imports <- c("spiralizer", dependencies)
-
+create_shiny_description <- function(app_dir, dependencies) {
+  # NOTE: We do NOT include spiralizer in Imports because:
+  # 1. It's not on CRAN, only on GitHub
+  # 2. The Remotes field doesn't work reliably on shinyapps.io
+  # 3. We have a fallback mechanism in app.R that sources files from src/
+  #
+  # We only list the CRAN dependencies that spiralizer needs.
   desc_content <- sprintf('Type: Shiny
 Title: Spiralizer - Interactive Voronoi Diagrams
 Version: 0.1.0
@@ -77,40 +80,22 @@ Depends:
     R (>= 4.1.0)
 Imports:
     %s
-Remotes:
-    github::%s
-', paste(all_imports, collapse = ",\n    "), github_repo)
+', paste(dependencies, collapse = ",\n    "))
 
   desc_path <- file.path(app_dir, "DESCRIPTION")
   writeLines(desc_content, desc_path)
   message("✓ Created ", desc_path)
 }
 
-create_rprofile_fallback <- function(app_dir) {
-  rprofile_content <- '# .Rprofile for shinyapps.io deployment
-# Fallback package installation if GitHub remote fails
-
-local({
-  # Try to install spiralizer from GitHub if not available
-  if (!requireNamespace("spiralizer", quietly = TRUE)) {
-    message("spiralizer package not found, attempting GitHub install...")
-    tryCatch({
-      if (!requireNamespace("remotes", quietly = TRUE)) {
-        install.packages("remotes")
-      }
-      remotes::install_github("pjt222/spiralizer", dependencies = TRUE)
-      message("✓ Installed spiralizer from GitHub")
-    }, error = function(e) {
-      message("⚠ GitHub install failed: ", e$message)
-      message("  Will fall back to sourcing R files directly")
-    })
-  }
-})
-'
-  rprofile_path <- file.path(app_dir, ".Rprofile")
-  writeLines(rprofile_content, rprofile_path)
-  message("✓ Created ", rprofile_path)
-}
+# NOTE: We do NOT create an .Rprofile anymore.
+# The .Rprofile was causing issues on shinyapps.io:
+# - Executed multiple times during parallel package installation
+# - Hit GitHub API rate limits (403 errors)
+# - Created chaotic installation state
+#
+# Instead, we rely on:
+# 1. DESCRIPTION Imports to install dependencies via shinyapps.io
+# 2. app.R fallback to source files from src/ directory
 
 copy_r_files <- function(app_dir, r_files) {
   # IMPORTANT: Use "src" not "R" to prevent shiny::loadSupport() from
@@ -205,20 +190,17 @@ main <- function() {
   message("\n--- Preparing deployment files ---")
 
   # 1. Create Type: Shiny DESCRIPTION
-  create_shiny_description(APP_DIR, GITHUB_REPO, DEPENDENCIES)
+  create_shiny_description(APP_DIR, DEPENDENCIES)
 
-  # 2. Create .Rprofile fallback
-  create_rprofile_fallback(APP_DIR)
-
-  # 3. Copy R files as fallback
+  # 2. Copy R files as fallback (no .Rprofile - it causes issues)
   copy_r_files(APP_DIR, R_FILES)
 
-  # 4. Verify config.yml
+  # 3. Verify config.yml
   copy_config(APP_DIR)
 
   message("\n--- Setting up rsconnect ---")
 
-  # 5. Setup rsconnect
+  # 4. Setup rsconnect
   if (!setup_rsconnect()) {
     stop("rsconnect not configured")
   }
@@ -227,7 +209,7 @@ main <- function() {
   message("App directory: ", APP_DIR)
   message("App name: ", APP_NAME)
 
-  # 6. Deploy
+  # 5. Deploy
   tryCatch({
     rsconnect::deployApp(
       appDir = APP_DIR,

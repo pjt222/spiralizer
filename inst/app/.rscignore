@@ -1,4 +1,3 @@
 # Files to exclude from shinyapps.io deployment
-# Note: .Rprofile is NOT excluded - it's needed for fallback package installation
 renv.lock
 renv/
