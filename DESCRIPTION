@@ -43,11 +43,14 @@ Imports:
     tessellation (>= 2.3.0),
     viridisLite
 Suggests:
+    covr,
     DBI,
     devtools,
     duckdb,
+    lintr,
     rcmdcheck,
     Rcpp,
+    shinytest2,
     testthat (>= 3.0.0)
 LinkingTo:
     Rcpp

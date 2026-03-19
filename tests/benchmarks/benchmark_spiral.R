@@ -4,10 +4,9 @@ library(microbenchmark)
 library(ggplot2)
 library(data.table)
 
-# Source our functions
-source(here::here("R/utils/spiral_math.R"))
-source(here::here("R/utils/cache_manager.R"))
-source(here::here("R/utils/performance.R"))
+# Load package functions
+library(spiralizer)
+# Or for development: devtools::load_all()
 
 # Benchmark parameters
 point_counts <- c(10, 50, 100, 300, 500, 1000, 2000)
@@ -175,7 +174,7 @@ saveRDS(
     ),
     timestamp = Sys.time()
   ),
-  file = "tests/benchmarks/benchmark_results.rds"
+  file = here::here("tests/benchmarks/benchmark_results.rds")
 )
 
 cat("\nBenchmark complete! Results saved to tests/benchmarks/\n")

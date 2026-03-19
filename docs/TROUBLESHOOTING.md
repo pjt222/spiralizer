@@ -110,10 +110,9 @@ if (.Platform$OS.type == "windows") {
 
 **Solution:**
 ```r
-# Load utilities before cache warming
-source("R/utils/spiral_math.R")      # Load first
-source("R/utils/cache_manager.R")    # Then cache manager
-warm_cache()                         # Finally warm cache
+# Load package before cache warming
+devtools::load_all()
+warm_cache()
 ```
 
 #### Problem: "qhull input error: not enough points to construct initial simplex"
@@ -153,9 +152,8 @@ shiny::runApp('app.R', port = 3838, host = '0.0.0.0')
 #### Problem: Modules not found
 **Solution:**
 ```r
-# Use here package for reliable paths
-library(here)
-source(here::here("R/modules/ui_controls.R"))
+# Use devtools::load_all() to load all package functions
+devtools::load_all()
 ```
 
 ### 5. Deployment Issues
@@ -188,7 +186,7 @@ renv::snapshot()
 **Solution:**
 ```r
 # Check cache is working
-source("R/utils/cache_manager.R")
+devtools::load_all()
 get_cache_stats()
 
 # Clear cache if needed
@@ -205,13 +203,13 @@ warm_cache()
 ```r
 # Project structure for deployment:
 spiralizer/
-├── app.R              # Main entry point
-├── R/
-│   ├── modules/       # Shiny modules
-│   └── utils/         # Utility functions
-└── www/               # Static assets
-    ├── css/
-    └── js/
+├── inst/
+│   └── app/           # Deployment entry point
+│       ├── app.R
+│       └── www/       # Static assets
+│           ├── css/
+│           └── js/
+└── R/                 # Package code (flat structure)
 ```
 
 ### 8. JavaScript/CSS Not Loading
@@ -221,8 +219,8 @@ spiralizer/
 ```r
 # Ensure www folder structure is correct
 # Files in www/ are automatically served
-# Reference as: href = "css/theme.css"
-# Not: href = "www/css/theme.css"
+# Reference as: href = "css/overlay.css"
+# Not: href = "www/css/overlay.css"
 ```
 
 ## 🛠️ Debugging Commands
@@ -244,13 +242,11 @@ Rscript -e "source('.Rprofile'); installed.packages()[,'Package']"
 ### Test Individual Components
 ```r
 # Test spiral generation
-source('.Rprofile')
-source('R/utils/spiral_math.R')
+devtools::load_all()
 points <- generate_fermat_spiral(0, 100, 300)
 str(points)
 
 # Test caching
-source('R/utils/cache_manager.R')
 get_cache_stats()
 ```
 
@@ -357,7 +353,11 @@ memory.size()
 ### Ready to Run Commands:
 ```r
 # From RStudio (recommended):
-source("R/app.R")
+source("inst/scripts/dev.R")
+
+# Or as installed package:
+library(spiralizer)
+run_spiralizer()
 
 # Check all is well:
 renv::status()  # Should show "No issues found"

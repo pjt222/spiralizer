@@ -18,6 +18,8 @@ jobs:
       matrix:
         config:
           - {os: ubuntu-latest, r: 'release'}
+          - {os: windows-latest, r: 'release'}
+          - {os: macos-latest, r: 'release'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -36,11 +38,16 @@ jobs:
       - name: Set up Pandoc
         uses: r-lib/actions/setup-pandoc@v2
 
-      - name: Install system dependencies
+      - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libglu1-mesa-dev libgl1-mesa-dev
+
+      - name: Install system dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install openssl libxml2
 
       - name: Setup renv
         uses: r-lib/actions/setup-renv@v2
@@ -64,3 +71,43 @@ jobs:
         with:
           name: ${{ matrix.config.os }}-r${{ matrix.config.r }}-results
           path: check
+
+  lint-and-coverage:
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: true
+
+      - name: Set up Pandoc
+        uses: r-lib/actions/setup-pandoc@v2
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libglu1-mesa-dev libgl1-mesa-dev
+
+      - name: Setup renv
+        uses: r-lib/actions/setup-renv@v2
+
+      - name: Install package and extra deps
+        run: |
+          Rscript -e "devtools::install(dependencies = FALSE, quick = TRUE)"
+          Rscript -e "install.packages(c('lintr', 'covr'))"
+
+      - name: Lint
+        run: |
+          Rscript -e "lintr::lint_package()"
+
+      - name: Test coverage
+        run: |
+          Rscript -e "covr::codecov(quiet = FALSE)"
