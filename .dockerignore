@@ -1,0 +1,17 @@
+.git
+.github
+.Rproj.user
+.Rhistory
+.RData
+renv/library
+renv/local
+renv/staging
+docs
+tests
+man
+vignettes
+*.tar.gz
+*.Rcheck
+src/*.o
+src/*.so
+src/*.dll

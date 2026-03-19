@@ -1,0 +1,57 @@
+name: Deploy to Hugging Face Spaces
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - 'tests/**'
+      - 'man/**'
+      - '*.md'
+      - '!hf-spaces/README.md'
+  workflow_dispatch:
+
+concurrency:
+  group: hf-spaces-deploy
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-hf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Prepare HF Spaces deployment
+        run: |
+          cp hf-spaces/README.md README.md
+          rm -rf hf-spaces/
+
+      - name: Upload to Hugging Face Spaces
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          pip install huggingface_hub
+          python -c "
+          from huggingface_hub import HfApi
+          import os
+          api = HfApi(token=os.environ['HF_TOKEN'])
+          api.upload_folder(
+              folder_path='.',
+              repo_id='pjt222/spiralizer',
+              repo_type='space',
+              ignore_patterns=['.git/*'],
+          )
+          print('Upload complete!')
+          "

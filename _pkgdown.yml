@@ -1,0 +1,50 @@
+url: https://pjt222.github.io/spiralizer/
+
+template:
+  bootstrap: 5
+
+navbar:
+  structure:
+    left: [intro, reference, articles]
+    right: [search, github]
+  components:
+    github:
+      icon: fa-github
+      href: https://github.com/pjt222/spiralizer
+
+reference:
+  - title: "Run the App"
+    contents:
+      - run_spiralizer
+      - spiralizer_app
+  - title: "Spiral Math"
+    contents:
+      - generate_fermat_spiral
+      - compute_voronoi
+      - truncate_spiral_points
+      - validate_spiral_params
+      - calculate_plot_limits
+  - title: "Theme & Colors"
+    contents:
+      - spiralizer_theme
+      - get_spiralizer_theme
+      - theme_colors
+      - get_color_palette
+      - palette_choices
+  - title: "Configuration"
+    contents:
+      - get_setting
+      - get_config_name
+      - reload_config
+  - title: "Performance"
+    contents:
+      - check_performance_mode
+      - get_performance_recommendations
+      - create_performance_report
+      - estimate_computation_time
+  - title: "Cache"
+    contents:
+      - compute_voronoi_cached
+      - get_cache_stats
+      - clear_spiral_cache
+      - warm_cache

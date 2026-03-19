@@ -10,7 +10,8 @@ Description: A Shiny web application that creates beautiful Voronoi diagrams
     capabilities.
 License: MIT + file LICENSE
 URL: https://github.com/pjt222/spiralizer,
-    https://pjt222.shinyapps.io/spiralizer/
+    https://pjt222.shinyapps.io/spiralizer/,
+    https://pjt222.github.io/spiralizer/
 BugReports: https://github.com/pjt222/spiralizer/issues
 Depends:
     R (>= 4.1.0)
@@ -52,6 +53,9 @@ Suggests:
     Rcpp,
     shinytest2,
     testthat (>= 3.0.0)
+Remotes:
+    stla/tessellation,
+    stla/cxhull
 LinkingTo:
     Rcpp
 Config/testthat/edition: 3

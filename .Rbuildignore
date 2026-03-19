@@ -25,6 +25,11 @@
 ^codecov\.yml$
 ^_pkgdown\.yml$
 
+# Docker and HF Spaces
+^Dockerfile$
+^\.dockerignore$
+^hf-spaces$
+
 # Legacy and development files
 ^www$
 ^config\.yml$
