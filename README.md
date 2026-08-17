@@ -4,6 +4,7 @@ Create beautiful Voronoi diagrams based on Fermat spirals.
 
 [![R-CMD-check](https://github.com/pjt222/spiralizer/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/pjt222/spiralizer/actions/workflows/R-CMD-check.yaml)
 [![pkgdown](https://github.com/pjt222/spiralizer/actions/workflows/pkgdown-gh-pages.yaml/badge.svg)](https://pjt222.github.io/spiralizer/)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/pjt222/spiralizer)
 
 **Live Demo:** [shinyapps.io](https://pjt222.shinyapps.io/spiralizer/) | [Hugging Face Space](https://huggingface.co/spaces/pjt222/spiralizer)
 
